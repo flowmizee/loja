@@ -45,6 +45,18 @@
     .header .right span {
       font-size: 28px;
       cursor: pointer;
+      display: inline-block;
+    }
+    /* Badge no ícone do carrinho */
+    .cart-count {
+      background: red;
+      color: #fff;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 0.8rem;
+      position: relative;
+      top: -12px;
+      left: -10px;
     }
     /* Texto rolando no topo */
     .promo-banner {
@@ -74,6 +86,7 @@
     .menu-icon {
       font-size: 36px;
       cursor: pointer;
+      display: inline-block;
     }
     /* Input de Pesquisa */
     .search-container {
@@ -186,7 +199,7 @@
       color: #02FF85;
       font-size: 1rem;
     }
-    /* Botão Comprar: largura da foto, texto em negrito, tudo maiúsculo e um pouquinho maior */
+    /* Botão Comprar */
     .buy-button {
       display: block;
       width: 100%;
@@ -201,8 +214,25 @@
       font-weight: bold;
       text-transform: uppercase;
     }
+    /* Animações */
+    @keyframes buttonClick {
+      0% { transform: scale(1); }
+      50% { transform: scale(0.9); }
+      100% { transform: scale(1); }
+    }
+    .button-animate {
+      animation: buttonClick 0.2s ease;
+    }
+    @keyframes iconClick {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .icon-animate {
+      animation: iconClick 0.2s ease;
+    }
   </style>
-  <!-- Inclua a biblioteca PapaParse para parsear CSV -->
+  <!-- Biblioteca PapaParse para ler CSV -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 </head>
 <body>
@@ -213,14 +243,16 @@
   <!-- Cabeçalho -->
   <header class="header">
     <div class="left">
-      <span class="menu-icon" onclick="toggleSidebar()">☰</span>
+      <span class="menu-icon" onclick="animateIcon(this); toggleSidebar()">☰</span>
     </div>
     <div class="center">
       <img src="logo.png" alt="Logo" class="logo">
     </div>
     <div class="right">
-      <span onclick="toggleSearch()">🔍</span>
-      <span>🛒</span>
+      <span onclick="animateIcon(this); toggleSearch()">🔍</span>
+      <span id="cart-icon" onclick="animateIcon(this); goToCart()">
+        🛒<span id="cart-count" class="cart-count">0</span>
+      </span>
     </div>
   </header>
   <!-- Input de Pesquisa -->
@@ -236,7 +268,11 @@
   <h1 class="products-title">Todos os produtos</h1>
   <!-- Container dos produtos -->
   <div id="products-container"></div>
+  
   <script>
+    // Variável global para o carrinho
+    let cart = [];
+
     function toggleSearch() {
       const searchInput = document.getElementById("searchInput");
       searchInput.classList.toggle("active");
@@ -251,10 +287,33 @@
       document.getElementById("sidebar").classList.toggle("open");
     }
 
-    // URL da planilha publicada em CSV
+    // Função para animar ícones
+    function animateIcon(element) {
+      element.classList.add("icon-animate");
+      setTimeout(() => element.classList.remove("icon-animate"), 200);
+    }
+
+    // Função para adicionar produto ao carrinho
+    function addToCart(product, button) {
+      // Animação do botão
+      button.classList.add("button-animate");
+      setTimeout(() => button.classList.remove("button-animate"), 200);
+      // Adiciona produto ao carrinho
+      cart.push(product);
+      // Atualiza o contador do carrinho
+      document.getElementById("cart-count").innerText = cart.length;
+      // Salva no localStorage para uso na página do carrinho
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+
+    // Função para redirecionar para a página do carrinho
+    function goToCart() {
+      window.location.href = "cart.html";
+    }
+
+    // Carrega a planilha CSV e exibe os produtos
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNzpkH5z5PPki-w88HnOUlMhdOpdD_Yjp4Y6JB7hyaHp90OSvhcVpnrWUR-Ghx2RMEg05nM13suulk/pub?output=csv";
 
-    // Carrega a planilha e exibe os produtos
     Papa.parse(csvUrl, {
       download: true,
       header: true,
@@ -263,6 +322,17 @@
         const container = document.getElementById("products-container");
         data.forEach(item => {
           if (!item.Nome || item.Nome.trim() === "") return;
+
+          // Cria objeto de produto para usar no carrinho
+          const product = {
+            name: item.Nome,
+            oldPrice: item["Preço Antigo"],
+            newPrice: item["Preço Novo"],
+            parcelas: item.Parcelas,
+            image: item["URL da Imagem"]
+          };
+
+          // Cria o card do produto
           const card = document.createElement("div");
           card.classList.add("product-card");
           card.innerHTML = `
@@ -278,9 +348,15 @@
             </div>
           `;
           container.appendChild(card);
+          
+          // Adiciona o evento no botão "Comprar"
+          const buyButton = card.querySelector(".buy-button");
+          buyButton.addEventListener("click", function() {
+            addToCart(product, buyButton);
+          });
         });
       }
     });
   </script>
 </body>
-</html>
+  </html>
