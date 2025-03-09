@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -59,17 +60,17 @@
     }
     /* Texto rolando no topo */
     .promo-banner {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
+      position: fixed; /*  Fixo no topo */
+      top: 0; /* Posicionado no topo */
+      left: 0; /* Posicionado à esquerda */
+      width: 100%; /* Largura total da tela */
       background: #fff;
       color: #000;
       text-align: center;
       padding: 10px 0;
       font-size: 18px;
       font-weight: bold;
-      z-index: 1010;
+      z-index: 1010; /* Acima do cabeçalho */
       overflow: hidden;
     }
     .promo-banner p {
@@ -195,7 +196,7 @@
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
-      background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><polyline points="1,3 5,7 9,3" fill="none" stroke="white" stroke-width="2"/></svg>');
+      background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="" width="10" height="10" viewBox="0 0 10 10"><polyline points="1,3 5,7 9,3" fill="none" stroke="white" stroke-width="2"/></svg>');
       background-repeat: no-repeat;
       background-position: right 10px center;
       background-size: 10px 10px;
@@ -328,15 +329,21 @@
   <!-- Input de Pesquisa -->
   <div class="search-container">
     <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar...">
-  </div>  <!-- Sidebar -->  <div class="sidebar" id="sidebar">
+  </div>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
     <a href="#">Produtos</a>
     <a href="#">Contato</a>
-  </div>  <!-- Container do Vídeo (acima dos filtros) -->  <div id="video-container">
+  </div>
+  <!-- Container do Vídeo (acima dos filtros) -->
+  <div id="video-container">
     <video id="promo-video" loop muted autoplay playsinline>
       <source src="video.mp4" type="video/mp4">
       Seu navegador não suporta o elemento de vídeo.
     </video>
-  </div>  <!-- Área de Filtros (em coluna) -->  <div id="filter-container">
+  </div>
+  <!-- Área de Filtros (em coluna) -->
+  <div id="filter-container">
     <!-- Input readonly para "Ordenar por" -->
     <input type="text" id="order-by" class="filter-input" value="Ordenar por" readonly>
     <!-- Dropdown para Categoria com opção "Todos os Produtos" -->
@@ -348,9 +355,12 @@
     </select>
   </div>
   <!-- Exibe a quantidade de produtos encontrados -->
-  <span id="product-count"></span>  <!-- Título da Seção de Produtos -->  <h1 class="products-title">Todos os Produtos</h1>
+  <span id="product-count"></span>
+  <!-- Título da Seção de Produtos -->
+  <h1 class="products-title">Todos os Produtos</h1>
   <!-- Container dos produtos -->
-  <div id="products-container"></div>  <script>
+  <div id="products-container"></div>
+  <script>
     // Recupera o carrinho do localStorage ou cria um array vazio
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     let allProducts = []; 
@@ -475,5 +485,6 @@
         renderProducts(allProducts);
       }
     });
-  </script></body>
+  </script>
+</body>
 </html>
