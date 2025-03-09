@@ -144,13 +144,13 @@
     .sidebar a:hover {
       background: #f0f0f0;
     }
-    /* Filtros */
+    /* Área de Filtros */
     #filter-container {
       display: flex;
       justify-content: space-between;
       gap: 10px;
       max-width: 800px;
-      margin: 220px auto 10px auto; /* abaixo do header e antes do título de produtos */
+      margin: 220px auto 10px auto; /* abaixo do header */
       padding: 0 20px;
     }
     .filter-input {
@@ -162,6 +162,10 @@
       font-size: 1rem;
       border-radius: 30px;
       text-align: center;
+    }
+    /* Input readonly para "Ordenar por" */
+    #order-by {
+      cursor: default;
     }
     #product-count {
       display: block;
@@ -295,14 +299,17 @@
   
   <!-- Área de Filtros -->
   <div id="filter-container">
-    <input type="text" id="order-by" class="filter-input" placeholder="Ordenar por">
+    <!-- Input readonly para "Ordenar por" -->
+    <input type="text" id="order-by" class="filter-input" value="Todos os Produtos" readonly>
+    <!-- Dropdown para Categoria com opção "Todos os Produtos" -->
     <select id="category" class="filter-input">
-      <option value="">Categoria</option>
+      <option value="all">Todos os Produtos</option>
       <option value="Anel">Anel</option>
       <option value="Pulseira">Pulseira</option>
       <option value="Relógio">Relógio</option>
     </select>
   </div>
+  <!-- Exibe a quantidade de produtos encontrados -->
   <span id="product-count"></span>
   
   <!-- Título -->
@@ -313,7 +320,7 @@
   <script>
     // Variáveis globais para o carrinho e para armazenar todos os produtos carregados
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    let allProducts = []; // Array para armazenar os produtos do CSV
+    let allProducts = []; // Armazena os produtos do CSV
 
     function toggleSearch() {
       const searchInput = document.getElementById("searchInput");
@@ -354,7 +361,6 @@
       const container = document.getElementById("products-container");
       container.innerHTML = "";
       products.forEach(product => {
-        // Cria o card do produto
         const card = document.createElement("div");
         card.classList.add("product-card");
         card.innerHTML = `
@@ -381,38 +387,22 @@
           }, buyButton);
         });
       });
-      // Atualiza a quantidade de produtos encontrados
       document.getElementById("product-count").innerText = products.length + " produto(s) encontrado(s)";
     }
 
-    // Evento para filtro por Categoria e ordenação
+    // Função de filtro por Categoria (o input "Ordenar por" não é editável)
     function applyFilters() {
       let filtered = allProducts.slice();
       const category = document.getElementById("category").value;
-      const orderBy = document.getElementById("order-by").value.trim().toLowerCase();
-      
-      if (category) {
+      if (category && category !== "all") {
         filtered = filtered.filter(product =>
           product.Nome.toLowerCase().includes(category.toLowerCase())
         );
       }
-      
-      // Ordenação simples: se o campo "Ordenar por" contiver "nome" ou "preço"
-      if (orderBy.includes("nome")) {
-        filtered.sort((a, b) => a.Nome.localeCompare(b.Nome));
-      } else if (orderBy.includes("preco") || orderBy.includes("preço")) {
-        filtered.sort((a, b) => {
-          let priceA = parseFloat(a["Preço Novo"].replace(/\D+/g, "")) / 100;
-          let priceB = parseFloat(b["Preço Novo"].replace(/\D+/g, "")) / 100;
-          return priceA - priceB;
-        });
-      }
       renderProducts(filtered);
     }
 
-    // Eventos para filtro: dispara quando mudar a categoria ou o campo ordenar por
     document.getElementById("category").addEventListener("change", applyFilters);
-    document.getElementById("order-by").addEventListener("change", applyFilters);
 
     // Carrega a planilha CSV e armazena os produtos
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNzpkH5z5PPki-w88HnOUlMhdOpdD_Yjp4Y6JB7hyaHp90OSvhcVpnrWUR-Ghx2RMEg05nM13suulk/pub?output=csv";
@@ -420,7 +410,6 @@
       download: true,
       header: true,
       complete: function(results) {
-        // Filtra os produtos que possuem nome
         allProducts = results.data.filter(item => item.Nome && item.Nome.trim() !== "");
         renderProducts(allProducts);
       }
