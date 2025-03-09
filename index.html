@@ -271,8 +271,8 @@
   <div id="products-container"></div>
   
   <script>
-    // Variável global para o carrinho
-    let cart = [];
+    // Recupera o carrinho salvo no localStorage, se existir; caso contrário, inicia com um array vazio
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
     function toggleSearch() {
       const searchInput = document.getElementById("searchInput");
@@ -309,7 +309,7 @@
 
     // Função para redirecionar para a página do carrinho
     function goToCart() {
-      // Redireciona para "produtos.html" (ajustado para ter apenas dois arquivos)
+      // Redireciona para "produtos.html" (que contém o carrinho)
       window.location.href = "produtos.html";
     }
 
