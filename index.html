@@ -16,7 +16,7 @@
     /* Cabeçalho */
     .header {
       position: fixed;
-      top: 40px; /* Deixando um espaço para o banner */
+      top: 40px; /* Espaço para o banner */
       left: 0;
       width: 100%;
       background: #000;
@@ -40,7 +40,7 @@
     .header .right {
       display: flex;
       align-items: center;
-      gap: 10px; /* Espaço entre a lupa e o carrinho */
+      gap: 10px;
     }
     .header .right span {
       font-size: 28px;
@@ -58,7 +58,7 @@
       padding: 10px 0;
       font-size: 18px;
       font-weight: bold;
-      z-index: 1010; /* Fica sobre o cabeçalho e sidebar */
+      z-index: 1010;
       overflow: hidden;
     }
     .promo-banner p {
@@ -67,12 +67,8 @@
       animation: scroll-text 10s linear infinite;
     }
     @keyframes scroll-text {
-      0% {
-        transform: translateX(100%);
-      }
-      100% {
-        transform: translateX(-100%);
-      }
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
     }
     /* Ícone do Menu (Sidebar) */
     .menu-icon {
@@ -150,7 +146,7 @@
       padding: 20px;
     }
     .product-card {
-      background: #111;
+      background: transparent;
       margin: 10px;
       padding: 10px;
       border-radius: 8px;
@@ -158,10 +154,13 @@
       box-sizing: border-box;
       text-align: center;
     }
+    /* Contorno afastado para a imagem */
     .product-image {
       width: 100%;
       height: auto;
       border-radius: 8px;
+      outline: 2px solid #fff;
+      outline-offset: 5px;
     }
     .product-description h2 {
       margin: 10px 0;
@@ -187,17 +186,20 @@
       color: #02FF85;
       font-size: 1rem;
     }
-    /* Botão Comprar */
+    /* Botão Comprar: largura da foto, texto em negrito, tudo maiúsculo e um pouquinho maior */
     .buy-button {
+      display: block;
+      width: 100%;
       border: 1px solid #000;
       background: #fff;
       color: #000;
-      padding: 12px 24px;
-      font-size: 1.2rem;
+      padding: 10px 0;
+      font-size: 1.3rem;
       cursor: pointer;
       margin-top: 10px;
-      border-radius: 5px;
-      font-weight: 300;
+      border-radius: 30px;
+      font-weight: bold;
+      text-transform: uppercase;
     }
   </style>
   <!-- Inclua a biblioteca PapaParse para parsear CSV -->
@@ -221,7 +223,7 @@
       <span>🛒</span>
     </div>
   </header>
-  <!-- Input de Pesquisa (Centralizado e Mais Baixo) -->
+  <!-- Input de Pesquisa -->
   <div class="search-container">
     <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar...">
   </div>
@@ -260,7 +262,6 @@
         const data = results.data;
         const container = document.getElementById("products-container");
         data.forEach(item => {
-          // Ignora linhas vazias
           if (!item.Nome || item.Nome.trim() === "") return;
           const card = document.createElement("div");
           card.classList.add("product-card");
