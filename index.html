@@ -27,6 +27,7 @@
       align-items: center;
       box-sizing: border-box;
       border-bottom: 1px solid rgba(255,255,255,0.2);
+      transition: top 0.3s ease;
     }
     .header .left { flex: 0 0 auto; }
     .header .center {
@@ -58,20 +59,25 @@
       top: -12px;
       left: -10px;
     }
-    /* Texto rolando no topo */
+    /* Banner de Promoção (Texto Rolando) */
     .promo-banner {
-      position: fixed; /*  Fixo no topo */
-      top: 0; /* Posicionado no topo */
-      left: 0; /* Posicionado à esquerda */
-      width: 100%; /* Largura total da tela */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
       background: #fff;
       color: #000;
       text-align: center;
       padding: 10px 0;
       font-size: 18px;
       font-weight: bold;
-      z-index: 1010; /* Acima do cabeçalho */
+      z-index: 1010;
       overflow: hidden;
+      transition: opacity 0.3s ease;
+    }
+    .promo-banner.hidden {
+      opacity: 0;
+      pointer-events: none;
     }
     .promo-banner p {
       margin: 0;
@@ -161,7 +167,7 @@
     /* Container do Vídeo */
     #video-container {
       max-width: 800px;
-      margin: 170px auto 10px auto; /* espaçamento entre o banner, search e filtros */
+      margin: 170px auto 10px auto; /* Espaçamento entre o banner, search e filtros */
       padding: 0 20px;
     }
     #promo-video {
@@ -176,7 +182,7 @@
       flex-direction: column;
       gap: 10px;
       max-width: 800px;
-      margin: 10px auto; /* logo abaixo do vídeo */
+      margin: 10px auto; /* Logo abaixo do vídeo */
       padding: 0 20px;
     }
     .filter-input {
@@ -196,7 +202,7 @@
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
-      background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="" width="10" height="10" viewBox="0 0 10 10"><polyline points="1,3 5,7 9,3" fill="none" stroke="white" stroke-width="2"/></svg>');
+      background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><polyline points="1,3 5,7 9,3" fill="none" stroke="white" stroke-width="2"/></svg>');
       background-repeat: no-repeat;
       background-position: right 10px center;
       background-size: 10px 10px;
@@ -360,6 +366,8 @@
   <h1 class="products-title">Todos os Produtos</h1>
   <!-- Container dos produtos -->
   <div id="products-container"></div>
+  
+  <!-- Script para controle do banner, pesquisa, sidebar e produtos -->
   <script>
     // Recupera o carrinho do localStorage ou cria um array vazio
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -483,6 +491,19 @@
       complete: function(results) {
         allProducts = results.data.filter(item => item.Nome && item.Nome.trim() !== "");
         renderProducts(allProducts);
+      }
+    });
+
+    // Script para esconder o banner e ajustar o cabeçalho quando o usuário rolar a página
+    window.addEventListener("scroll", function() {
+      const banner = document.querySelector(".promo-banner");
+      const header = document.querySelector(".header");
+      if (window.scrollY > 0) {
+        banner.classList.add("hidden");
+        header.style.top = "0";
+      } else {
+        banner.classList.remove("hidden");
+        header.style.top = "40px";
       }
     });
   </script>
