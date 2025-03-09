@@ -27,7 +27,6 @@
       align-items: center;
       box-sizing: border-box;
       border-bottom: 1px solid rgba(255,255,255,0.2);
-      transition: top 0.3s ease;
     }
     .header .left { flex: 0 0 auto; }
     .header .center {
@@ -59,7 +58,7 @@
       top: -12px;
       left: -10px;
     }
-    /* Banner de Promoção (Texto Rolando) */
+    /* Texto rolando no topo */
     .promo-banner {
       position: fixed;
       top: 0;
@@ -73,11 +72,6 @@
       font-weight: bold;
       z-index: 1010;
       overflow: hidden;
-      transition: opacity 0.3s ease;
-    }
-    .promo-banner.hidden {
-      opacity: 0;
-      pointer-events: none;
     }
     .promo-banner p {
       margin: 0;
@@ -167,7 +161,7 @@
     /* Container do Vídeo */
     #video-container {
       max-width: 800px;
-      margin: 170px auto 10px auto; /* Espaçamento entre o banner, search e filtros */
+      margin: 170px auto 10px auto; /* espaçamento entre o banner, search e filtros */
       padding: 0 20px;
     }
     #promo-video {
@@ -182,7 +176,7 @@
       flex-direction: column;
       gap: 10px;
       max-width: 800px;
-      margin: 10px auto; /* Logo abaixo do vídeo */
+      margin: 10px auto; /* logo abaixo do vídeo */
       padding: 0 20px;
     }
     .filter-input {
@@ -336,10 +330,14 @@
   <div class="search-container">
     <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar...">
   </div>
-  <!-- Sidebar -->
+  <!-- Sidebar com Instagram e WhatsApp -->
   <div class="sidebar" id="sidebar">
-    <a href="#">Produtos</a>
-    <a href="#">Contato</a>
+    <a href="https://www.instagram.com/1001importts?igsh=aTgxaDBsNjJ1dngx" target="_blank">
+      <img src="instagram.png" alt="Instagram" style="width:20px; vertical-align:middle; margin-right:8px;"> Instagram
+    </a>
+    <a href="https://api.whatsapp.com/send?phone=17996833867" target="_blank">
+      <img src="whatsapp.png" alt="WhatsApp" style="width:20px; vertical-align:middle; margin-right:8px;"> WhatsApp
+    </a>
   </div>
   <!-- Container do Vídeo (acima dos filtros) -->
   <div id="video-container">
@@ -366,8 +364,6 @@
   <h1 class="products-title">Todos os Produtos</h1>
   <!-- Container dos produtos -->
   <div id="products-container"></div>
-  
-  <!-- Script para controle do banner, pesquisa, sidebar e produtos -->
   <script>
     // Recupera o carrinho do localStorage ou cria um array vazio
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -491,19 +487,6 @@
       complete: function(results) {
         allProducts = results.data.filter(item => item.Nome && item.Nome.trim() !== "");
         renderProducts(allProducts);
-      }
-    });
-
-    // Script para esconder o banner e ajustar o cabeçalho quando o usuário rolar a página
-    window.addEventListener("scroll", function() {
-      const banner = document.querySelector(".promo-banner");
-      const header = document.querySelector(".header");
-      if (window.scrollY > 0) {
-        banner.classList.add("hidden");
-        header.style.top = "0";
-      } else {
-        banner.classList.remove("hidden");
-        header.style.top = "40px";
       }
     });
   </script>
