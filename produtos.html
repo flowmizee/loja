@@ -85,6 +85,13 @@
       text-decoration: none;
       font-size: 1rem;
     }
+    /* Exibição da quantidade de itens no carrinho */
+    #cart-count-display {
+      text-align: center;
+      margin: 10px 0;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
     /* Container do formulário que desliza de baixo para cima */
     #form-container {
       position: fixed;
@@ -130,10 +137,12 @@
   </header>
   <div class="container">
     <div id="cart-items"></div>
+    <div id="cart-count-display"></div>
     <div id="total" class="total"></div>
     
     <!-- Botão que exibe o formulário -->
     <button class="checkout-btn" onclick="showForm()">Finalizar Compra</button>
+    <!-- Esse link apenas navega de volta para a página de produtos -->
     <a href="index.html" class="back-link">Voltar para Produtos</a>
   </div>
   
@@ -174,7 +183,7 @@
     // Recupera o carrinho salvo no localStorage
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     
-    // Renderiza os itens do carrinho
+    // Renderiza os itens do carrinho e atualiza a quantidade exibida
     function renderCart() {
       const cartItemsContainer = document.getElementById("cart-items");
       cartItemsContainer.innerHTML = "";
@@ -182,6 +191,7 @@
       if (cart.length === 0) {
         cartItemsContainer.innerHTML = "<p>Seu carrinho está vazio.</p>";
         document.getElementById("total").innerText = "";
+        document.getElementById("cart-count-display").innerText = "Itens no carrinho: 0";
         return;
       }
       
@@ -209,6 +219,7 @@
       });
       
       document.getElementById("total").innerText = "Total: R$ " + total.toFixed(2);
+      document.getElementById("cart-count-display").innerText = "Itens no carrinho: " + cart.length;
     }
     
     // Detecta o gesto de deslizar para a esquerda e remove o item
@@ -225,7 +236,7 @@
       element.addEventListener('touchmove', function(e) {
         currentX = e.touches[0].clientX;
         let deltaX = currentX - startX;
-        if (deltaX < 0) { // apenas para deslize à esquerda
+        if (deltaX < 0) { // somente para deslize à esquerda
           element.style.transform = `translateX(${deltaX}px)`;
         }
       }, false);
@@ -251,6 +262,42 @@
     // Exibe o formulário deslizando de baixo para cima
     function showForm() {
       document.getElementById("form-container").classList.add("show");
+    }
+    
+    // Anexa eventos de swipe para fechar o formulário deslizando para baixo
+    function attachFormSwipe() {
+      const formContainer = document.getElementById("form-container");
+      let startY = 0;
+      let currentY = 0;
+      const threshold = 100; // distância mínima para acionar o fechamento
+      
+      formContainer.addEventListener('touchstart', function(e) {
+        startY = e.touches[0].clientY;
+        formContainer.style.transition = '';
+      }, false);
+      
+      formContainer.addEventListener('touchmove', function(e) {
+        currentY = e.touches[0].clientY;
+        let deltaY = currentY - startY;
+        if (deltaY > 0) { // apenas para deslizar para baixo
+          formContainer.style.transform = `translateY(${deltaY}px)`;
+        }
+      }, false);
+      
+      formContainer.addEventListener('touchend', function(e) {
+        let deltaY = currentY - startY;
+        if (deltaY > threshold) {
+          formContainer.style.transition = 'transform 0.3s ease-out';
+          formContainer.style.transform = 'translateY(100%)';
+          setTimeout(() => {
+            formContainer.classList.remove("show");
+            formContainer.style.transform = ''; // reseta a transformação
+          }, 300);
+        } else {
+          formContainer.style.transition = 'transform 0.3s ease-out';
+          formContainer.style.transform = 'translateY(0)';
+        }
+      }, false);
     }
     
     // Finaliza a compra e envia os dados via WhatsApp com formatação
@@ -306,6 +353,7 @@
     }
     
     renderCart();
+    attachFormSwipe();
   </script>
 </body>
 </html>
