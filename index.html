@@ -155,13 +155,25 @@
     .sidebar a:hover {
       background: #f0f0f0;
     }
+    /* Container do Vídeo */
+    #video-container {
+      max-width: 800px;
+      margin: 170px auto 10px auto; /* espaçamento entre o banner, search e filtros */
+      padding: 0 20px;
+    }
+    #promo-video {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+    }
     /* Área de Filtros (em coluna) */
     #filter-container {
       display: flex;
       flex-direction: column;
       gap: 10px;
       max-width: 800px;
-      margin: 220px auto 10px auto; /* abaixo do header */
+      margin: 10px auto; /* logo abaixo do vídeo */
       padding: 0 20px;
     }
     .filter-input {
@@ -315,10 +327,19 @@
   <div class="search-container">
     <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar...">
   </div>
+  
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <a href="#">Produtos</a>
     <a href="#">Contato</a>
+  </div>
+  
+  <!-- Container do Vídeo (acima dos filtros) -->
+  <div id="video-container">
+    <video id="promo-video" loop muted autoplay playsinline>
+      <source src="video.mp4" type="video/mp4">
+      Seu navegador não suporta o elemento de vídeo.
+    </video>
   </div>
   
   <!-- Área de Filtros (em coluna) -->
@@ -355,11 +376,15 @@
     function toggleSearch() {
       const searchInput = document.getElementById("searchInput");
       searchInput.classList.toggle("active");
+      // Controla o vídeo: pausa se o input estiver ativo; retoma se não
+      const video = document.getElementById("promo-video");
       if (searchInput.classList.contains("active")) {
+        video.pause();
         searchInput.focus();
       } else {
         searchInput.value = "";
         filterProducts();
+        video.play();
       }
     }
 
