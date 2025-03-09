@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!DOCTYPE html><html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,39 +12,15 @@
       color: #fff;
       font-family: Arial, sans-serif;
     }
-    /* Promo Banner – Fixo no topo */
-    .promo-banner {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: #fff;
-      color: #000;
-      text-align: center;
-      padding: 10px 0;
-      font-size: 18px;
-      font-weight: bold;
-      z-index: 1010;
-      overflow: hidden;
-    }
-    .promo-banner p {
-      margin: 0;
-      white-space: nowrap;
-      animation: scroll-text 10s linear infinite;
-    }
-    @keyframes scroll-text {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
-    }
-    /* Cabeçalho – Agora relativo para que role com a página */
+    /* Cabeçalho */
     .header {
-      position: relative;
-      margin-top: 40px; /* Espaço para o banner fixo */
+      position: fixed;
+      top: 40px; /* Espaço para o banner */
       left: 0;
       width: 100%;
       background: #000;
       padding: 10px 20px;
-      /* Removido o top fixo e o z-index */
+      z-index: 1000;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -82,7 +57,37 @@
       top: -12px;
       left: -10px;
     }
-    /* Input de Pesquisa – Mantém comportamento fixo */
+    /* Texto rolando no topo */
+    .promo-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #fff;
+      color: #000;
+      text-align: center;
+      padding: 10px 0;
+      font-size: 18px;
+      font-weight: bold;
+      z-index: 1010;
+      overflow: hidden;
+    }
+    .promo-banner p {
+      margin: 0;
+      white-space: nowrap;
+      animation: scroll-text 10s linear infinite;
+    }
+    @keyframes scroll-text {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    /* Ícone do Menu (Sidebar) */
+    .menu-icon {
+      font-size: 36px;
+      cursor: pointer;
+      display: inline-block;
+    }
+    /* Input de Pesquisa – Ajustado para posição fixa */
     .search-container {
       position: fixed;
       top: 0;
@@ -112,15 +117,20 @@
     .search-input.active {
       opacity: 1;
       visibility: visible;
-      top: 120px; /* Posicionado um pouquinho mais abaixo */
+      top: 120px; /* Agora fica um pouquinho mais abaixo */
     }
+    /* Responsividade para o input da pesquisa */
     @media screen and (min-width: 768px) {
-      .search-input { width: 400px; }
+      .search-input {
+        width: 400px;
+      }
     }
     @media screen and (min-width: 1024px) {
-      .search-input { width: 500px; }
+      .search-input {
+        width: 500px;
+      }
     }
-    /* Sidebar – Permanece fixo */
+    /* Sidebar */
     .sidebar {
       position: fixed;
       top: 0;
@@ -144,11 +154,13 @@
       margin: 20px 0;
       padding: 10px 0;
     }
-    .sidebar a:hover { background: #f0f0f0; }
+    .sidebar a:hover {
+      background: #f0f0f0;
+    }
     /* Container do Vídeo */
     #video-container {
       max-width: 800px;
-      margin: 170px auto 10px auto; /* Espaço entre banner, header, search e filtros */
+      margin: 170px auto 10px auto; /* espaçamento entre o banner, search e filtros */
       padding: 0 20px;
     }
     #promo-video {
@@ -157,13 +169,13 @@
       display: block;
       border-radius: 8px;
     }
-    /* Área de Filtros */
+    /* Área de Filtros (em coluna) */
     #filter-container {
       display: flex;
       flex-direction: column;
       gap: 10px;
       max-width: 800px;
-      margin: 10px auto;
+      margin: 10px auto; /* logo abaixo do vídeo */
       padding: 0 20px;
     }
     .filter-input {
@@ -175,9 +187,10 @@
       font-size: 1rem;
       border-radius: 30px;
       text-align: center;
-      height: 40px;
-      box-sizing: border-box;
+      height: 40px;              /* Altura fixa para igualar os inputs */
+      box-sizing: border-box;    /* Inclui padding e border no tamanho final */
     }
+    /* Customização do dropdown para exibir seta para baixo */
     select.filter-input {
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -188,7 +201,10 @@
       background-size: 10px 10px;
       padding-right: 30px;
     }
-    #order-by { cursor: default; }
+    /* Input readonly para "Ordenar por" com valor fixo */
+    #order-by {
+      cursor: default;
+    }
     #product-count {
       display: block;
       text-align: center;
@@ -196,12 +212,14 @@
       font-size: 1.2rem;
       max-width: 800px;
     }
+    /* Título da Seção de Produtos */
     .products-title {
       text-align: center;
       font-size: 2rem;
       font-weight: bold;
       margin: 10px auto;
     }
+    /* Container de Produtos */
     #products-container {
       display: flex;
       flex-wrap: wrap;
@@ -219,6 +237,7 @@
       box-sizing: border-box;
       text-align: center;
     }
+    /* Contorno afastado para a imagem */
     .product-image {
       width: 100%;
       height: auto;
@@ -234,6 +253,7 @@
       margin: 5px 0;
       font-size: 1rem;
     }
+    /* Preços com estilos distintos */
     .prices {
       display: flex;
       justify-content: center;
@@ -249,6 +269,7 @@
       color: #02FF85;
       font-size: 1rem;
     }
+    /* Botão Comprar */
     .buy-button {
       display: block;
       width: 100%;
@@ -263,6 +284,7 @@
       font-weight: bold;
       text-transform: uppercase;
     }
+    /* Animações */
     @keyframes buttonClick {
       0% { transform: scale(1); }
       50% { transform: scale(0.9); }
@@ -280,14 +302,15 @@
       animation: iconClick 0.2s ease;
     }
   </style>
+  <!-- Biblioteca PapaParse para ler CSV -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 </head>
 <body>
-  <!-- Promo Banner fixo -->
+  <!-- Banner de Promoção (Texto Rolando) -->
   <div class="promo-banner">
     <p>Parcele em até 5x sem juros | Frete grátis acima de R$ 300</p>
   </div>
-  <!-- Cabeçalho (com ícones) que agora rola com a página -->
+  <!-- Cabeçalho -->
   <header class="header">
     <div class="left">
       <span class="menu-icon" onclick="animateIcon(this); toggleSidebar()">☰</span>
@@ -302,25 +325,21 @@
       </span>
     </div>
   </header>
-  <!-- Input de Pesquisa fixo -->
+  <!-- Input de Pesquisa -->
   <div class="search-container">
     <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar...">
-  </div>
-  <!-- Sidebar fixa -->
-  <div class="sidebar" id="sidebar">
+  </div>  <!-- Sidebar -->  <div class="sidebar" id="sidebar">
     <a href="#">Produtos</a>
     <a href="#">Contato</a>
-  </div>
-  <!-- Container do Vídeo -->
-  <div id="video-container">
+  </div>  <!-- Container do Vídeo (acima dos filtros) -->  <div id="video-container">
     <video id="promo-video" loop muted autoplay playsinline>
       <source src="video.mp4" type="video/mp4">
       Seu navegador não suporta o elemento de vídeo.
     </video>
-  </div>
-  <!-- Área de Filtros -->
-  <div id="filter-container">
+  </div>  <!-- Área de Filtros (em coluna) -->  <div id="filter-container">
+    <!-- Input readonly para "Ordenar por" -->
     <input type="text" id="order-by" class="filter-input" value="Ordenar por" readonly>
+    <!-- Dropdown para Categoria com opção "Todos os Produtos" -->
     <select id="category" class="filter-input">
       <option value="all">Todos os Produtos</option>
       <option value="Anel">Anel</option>
@@ -328,19 +347,24 @@
       <option value="Relógio">Relógio</option>
     </select>
   </div>
-  <span id="product-count"></span>
-  <h1 class="products-title">Todos os Produtos</h1>
-  <div id="products-container"></div>
-  <script>
+  <!-- Exibe a quantidade de produtos encontrados -->
+  <span id="product-count"></span>  <!-- Título da Seção de Produtos -->  <h1 class="products-title">Todos os Produtos</h1>
+  <!-- Container dos produtos -->
+  <div id="products-container"></div>  <script>
+    // Recupera o carrinho do localStorage ou cria um array vazio
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    let allProducts = [];
+    let allProducts = []; 
+
+    // Atualiza o contador do carrinho ao carregar a página
     window.addEventListener("load", function() {
       cart = JSON.parse(localStorage.getItem("cart")) || [];
       document.getElementById("cart-count").innerText = cart.length;
     });
+
     function toggleSearch() {
       const searchInput = document.getElementById("searchInput");
       searchInput.classList.toggle("active");
+      // Controla o vídeo: pausa se o input estiver ativo; retoma se não
       const video = document.getElementById("promo-video");
       if (searchInput.classList.contains("active")) {
         video.pause();
@@ -351,13 +375,18 @@
         video.play();
       }
     }
+
     function toggleSidebar() {
       document.getElementById("sidebar").classList.toggle("open");
     }
+
+    // Função para animar ícones
     function animateIcon(element) {
       element.classList.add("icon-animate");
       setTimeout(() => element.classList.remove("icon-animate"), 200);
     }
+
+    // Função para adicionar produto ao carrinho
     function addToCart(product, button) {
       button.classList.add("button-animate");
       setTimeout(() => button.classList.remove("button-animate"), 200);
@@ -365,9 +394,13 @@
       document.getElementById("cart-count").innerText = cart.length;
       localStorage.setItem("cart", JSON.stringify(cart));
     }
+
+    // Função para redirecionar para a página do carrinho
     function goToCart() {
       window.location.href = "produtos.html";
     }
+
+    // Função para renderizar os produtos
     function renderProducts(products) {
       const container = document.getElementById("products-container");
       container.innerHTML = "";
@@ -400,11 +433,15 @@
       });
       document.getElementById("product-count").innerText = products.length + " produto(s) encontrado(s)";
     }
+
+    // Função para filtrar os produtos com base na categoria e no texto de pesquisa
     function filterProducts() {
       let filtered = allProducts.slice();
       const category = document.getElementById("category").value;
       const searchQuery = document.getElementById("searchInput").value.trim().toLowerCase();
       const titleElement = document.querySelector('.products-title');
+      
+      // Atualiza o título com base na seleção da categoria
       if (category === "all") {
         titleElement.textContent = "Todos os Produtos";
       } else {
@@ -413,15 +450,22 @@
           product.Nome.toLowerCase().includes(category.toLowerCase())
         );
       }
+      
+      // Se houver texto na pesquisa, filtra também pelos produtos que contenham esse texto
       if (searchQuery !== "") {
         filtered = filtered.filter(product =>
           product.Nome.toLowerCase().includes(searchQuery)
         );
       }
+      
       renderProducts(filtered);
     }
+
+    // Eventos: filtra ao alterar a categoria ou ao digitar na pesquisa
     document.getElementById("category").addEventListener("change", filterProducts);
     document.getElementById("searchInput").addEventListener("input", filterProducts);
+
+    // Carrega a planilha CSV e armazena os produtos
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNzpkH5z5PPki-w88HnOUlMhdOpdD_Yjp4Y6JB7hyaHp90OSvhcVpnrWUR-Ghx2RMEg05nM13suulk/pub?output=csv";
     Papa.parse(csvUrl, {
       download: true,
@@ -431,6 +475,5 @@
         renderProducts(allProducts);
       }
     });
-  </script>
-</body>
+  </script></body>
 </html>
