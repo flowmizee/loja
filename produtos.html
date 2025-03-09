@@ -95,7 +95,8 @@
       display: block;
       margin-top: 10px;
     }
-    #delivery-form input, #delivery-form select {
+    #delivery-form input, 
+    #delivery-form select {
       width: 100%;
       padding: 8px;
       margin-top: 5px;
@@ -103,6 +104,7 @@
       border: 1px solid #333;
       background: #000;
       color: #fff;
+      box-sizing: border-box;
     }
     #payment-info {
       margin-top: 10px;
@@ -124,18 +126,27 @@
       <label for="nome">Nome:</label>
       <input type="text" id="nome" name="nome" required>
       
+      <label for="estado">Estado:</label>
+      <input type="text" id="estado" name="estado" required>
+      
+      <label for="cidade">Cidade:</label>
+      <input type="text" id="cidade" name="cidade" required>
+      
       <label for="endereco">Endereço:</label>
       <input type="text" id="endereco" name="endereco" required>
       
-      <label for="telefone">Telefone:</label>
-      <input type="text" id="telefone" name="telefone" required>
+      <label for="complemento">Complemento:</label>
+      <input type="text" id="complemento" name="complemento">
+      
+      <label for="ponto">Ponto de Referência:</label>
+      <input type="text" id="ponto" name="ponto">
       
       <label for="pagamento">Forma de Pagamento:</label>
       <select id="pagamento" name="pagamento" required>
         <option value="">Selecione</option>
         <option value="pix">Pix</option>
-        <option value="debito">Débito</option>
-        <option value="credito">Crédito</option>
+        <option value="credito">Cartão de Crédito</option>
+        <option value="debito">Cartão de Débito</option>
       </select>
       
       <div id="payment-info" style="display:none;"></div>
@@ -186,7 +197,7 @@
       document.getElementById("total").innerText = "Total: R$ " + total.toFixed(2);
     }
     
-    // Função para detectar o gesto de deslizar para a esquerda e remover o item
+    // Detecta o gesto de deslizar para a esquerda e remove o item
     function attachSwipeListeners(element) {
       let startX = 0;
       let currentX = 0;
@@ -200,7 +211,7 @@
       element.addEventListener('touchmove', function(e) {
         currentX = e.touches[0].clientX;
         let deltaX = currentX - startX;
-        if (deltaX < 0) { // somente deslizar para a esquerda
+        if (deltaX < 0) { // apenas para deslize à esquerda
           element.style.transform = `translateX(${deltaX}px)`;
         }
       }, false);
@@ -223,36 +234,45 @@
       }, false);
     }
     
-    // Atualiza as informações de pagamento com base na seleção do dropdown
+    // Atualiza as informações de pagamento com base na seleção
     document.getElementById('pagamento').addEventListener('change', function(){
       const paymentInfoDiv = document.getElementById('payment-info');
       if (this.value === 'pix') {
-        paymentInfoDiv.innerText = 'renimarfilho000@gmail.com';
+        paymentInfoDiv.innerHTML = 'Forma de pagamento: Pix<br>Chave Pix: renimarfilho000@gmail.com';
         paymentInfoDiv.style.display = 'block';
-      } else if (this.value === 'debito' || this.value === 'credito') {
-        paymentInfoDiv.innerHTML = '<a href="https://link.mercadopago.com.br/flowmize" target="_blank" style="color:#02FF85; text-decoration: underline;">Pagamento via MercadoPago</a>';
+      } else if (this.value === 'credito') {
+        paymentInfoDiv.innerHTML = 'Forma de pagamento: Cartão de Crédito<br>Link para Pagamento: https://link.mercadopago.com.br/flowmize';
+        paymentInfoDiv.style.display = 'block';
+      } else if (this.value === 'debito') {
+        paymentInfoDiv.innerHTML = 'Forma de pagamento: Cartão de Débito<br>Link para Pagamento: https://link.mercadopago.com.br/flowmize';
         paymentInfoDiv.style.display = 'block';
       } else {
         paymentInfoDiv.style.display = 'none';
       }
     });
     
-    // Finaliza a compra, compilando as informações e abrindo o WhatsApp com a mensagem formatada
+    // Finaliza a compra e envia os dados via WhatsApp
     function finalizePurchase() {
       const nome = document.getElementById("nome").value.trim();
+      const estado = document.getElementById("estado").value.trim();
+      const cidade = document.getElementById("cidade").value.trim();
       const endereco = document.getElementById("endereco").value.trim();
-      const telefone = document.getElementById("telefone").value.trim();
+      const complemento = document.getElementById("complemento").value.trim();
+      const ponto = document.getElementById("ponto").value.trim();
       const pagamento = document.getElementById("pagamento").value;
-      let pagamentoInfo = "";
-      if (pagamento === "pix") {
-        pagamentoInfo = "renimarfilho000@gmail.com";
-      } else if (pagamento === "debito" || pagamento === "credito") {
-        pagamentoInfo = "https://link.mercadopago.com.br/flowmize";
+      
+      if (!nome || !estado || !cidade || !endereco || !pagamento) {
+        alert("Por favor, preencha os campos obrigatórios do formulário.");
+        return;
       }
       
-      if (!nome || !endereco || !telefone || !pagamento) {
-        alert("Por favor, preencha todos os campos do formulário.");
-        return;
+      let pagamentoInfo = "";
+      if (pagamento === "pix") {
+        pagamentoInfo = "Forma de pagamento: Pix\nChave Pix: renimarfilho000@gmail.com";
+      } else if (pagamento === "credito") {
+        pagamentoInfo = "Forma de pagamento: Cartão de Crédito\nLink para Pagamento: https://link.mercadopago.com.br/flowmize";
+      } else if (pagamento === "debito") {
+        pagamentoInfo = "Forma de pagamento: Cartão de Débito\nLink para Pagamento: https://link.mercadopago.com.br/flowmize";
       }
       
       let produtosTexto = "Produtos:\n";
@@ -270,10 +290,12 @@
       
       let entregaTexto = "Dados de Entrega:\n";
       entregaTexto += `Nome: ${nome}\n`;
+      entregaTexto += `Estado: ${estado}\n`;
+      entregaTexto += `Cidade: ${cidade}\n`;
       entregaTexto += `Endereço: ${endereco}\n`;
-      entregaTexto += `Telefone: ${telefone}\n`;
-      entregaTexto += `Forma de Pagamento: ${pagamento.toUpperCase()}\n`;
-      entregaTexto += `Informação de Pagamento: ${pagamentoInfo}\n`;
+      entregaTexto += `Complemento: ${complemento}\n`;
+      entregaTexto += `Ponto de Referência: ${ponto}\n`;
+      entregaTexto += `${pagamentoInfo}\n`;
       
       let mensagem = "Olá, gostaria de finalizar a compra:\n\n" + produtosTexto + entregaTexto;
       let url = "https://wa.me/17996833867?text=" + encodeURIComponent(mensagem);
