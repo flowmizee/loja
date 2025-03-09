@@ -331,9 +331,9 @@
   <div id="products-container"></div>
   
   <script>
-    // Variáveis globais para o carrinho e para armazenar todos os produtos carregados
+    // Variáveis globais para o carrinho e para armazenar todos os produtos do CSV
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    let allProducts = []; // Armazena os produtos do CSV
+    let allProducts = []; 
 
     function toggleSearch() {
       const searchInput = document.getElementById("searchInput");
@@ -342,6 +342,7 @@
         searchInput.focus();
       } else {
         searchInput.value = "";
+        filterProducts();
       }
     }
 
@@ -403,13 +404,14 @@
       document.getElementById("product-count").innerText = products.length + " produto(s) encontrado(s)";
     }
 
-    // Função de filtro por Categoria e atualização do título
-    function applyFilters() {
+    // Função para filtrar os produtos com base na categoria e no texto de pesquisa
+    function filterProducts() {
       let filtered = allProducts.slice();
       const category = document.getElementById("category").value;
+      const searchQuery = document.getElementById("searchInput").value.trim().toLowerCase();
       const titleElement = document.querySelector('.products-title');
       
-      // Atualiza o título com base na seleção
+      // Atualiza o título com base na seleção da categoria
       if (category === "all") {
         titleElement.textContent = "Todos os Produtos";
       } else {
@@ -419,10 +421,19 @@
         );
       }
       
+      // Se houver texto na pesquisa, filtra também pelos produtos que contenham esse texto
+      if (searchQuery !== "") {
+        filtered = filtered.filter(product =>
+          product.Nome.toLowerCase().includes(searchQuery)
+        );
+      }
+      
       renderProducts(filtered);
     }
 
-    document.getElementById("category").addEventListener("change", applyFilters);
+    // Eventos: filtra ao alterar a categoria ou ao digitar na pesquisa
+    document.getElementById("category").addEventListener("change", filterProducts);
+    document.getElementById("searchInput").addEventListener("input", filterProducts);
 
     // Carrega a planilha CSV e armazena os produtos
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNzpkH5z5PPki-w88HnOUlMhdOpdD_Yjp4Y6JB7hyaHp90OSvhcVpnrWUR-Ghx2RMEg05nM13suulk/pub?output=csv";
