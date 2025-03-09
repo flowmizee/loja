@@ -32,9 +32,10 @@
       align-items: center;
       border-bottom: 1px solid #333;
       padding: 10px 0;
-    }
-    .cart-item:last-child {
-      border-bottom: none;
+      position: relative;
+      background: #111;
+      transition: transform 0.3s ease-out;
+      overflow: hidden;
     }
     .cart-item img {
       width: 100px;
@@ -83,6 +84,31 @@
       text-decoration: none;
       font-size: 1rem;
     }
+    /* Estilo do formulário de entrega */
+    #delivery-form {
+      margin-top: 20px;
+      background: #111;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    #delivery-form label {
+      display: block;
+      margin-top: 10px;
+    }
+    #delivery-form input, #delivery-form select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 4px;
+      border: 1px solid #333;
+      background: #000;
+      color: #fff;
+    }
+    #payment-info {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #02FF85;
+    }
   </style>
 </head>
 <body>
@@ -92,14 +118,38 @@
   <div class="container">
     <div id="cart-items"></div>
     <div id="total" class="total"></div>
+    
+    <!-- Formulário de Entrega -->
+    <form id="delivery-form">
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required>
+      
+      <label for="endereco">Endereço:</label>
+      <input type="text" id="endereco" name="endereco" required>
+      
+      <label for="telefone">Telefone:</label>
+      <input type="text" id="telefone" name="telefone" required>
+      
+      <label for="pagamento">Forma de Pagamento:</label>
+      <select id="pagamento" name="pagamento" required>
+        <option value="">Selecione</option>
+        <option value="pix">Pix</option>
+        <option value="debito">Débito</option>
+        <option value="credito">Crédito</option>
+      </select>
+      
+      <div id="payment-info" style="display:none;"></div>
+    </form>
+    
     <button class="checkout-btn" onclick="finalizePurchase()">Finalizar Compra</button>
     <a href="index.html" class="back-link">Voltar para Produtos</a>
   </div>
+  
   <script>
     // Recupera o carrinho salvo no localStorage
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     
-    // Função que renderiza os itens do carrinho
+    // Renderiza os itens do carrinho
     function renderCart() {
       const cartItemsContainer = document.getElementById("cart-items");
       cartItemsContainer.innerHTML = "";
@@ -111,17 +161,16 @@
       }
       
       let total = 0;
-      cart.forEach(item => {
-        // Converte o preço novo para número
-        let price = item.newPrice.replace(/\D+/g, ""); // Remove caracteres não numéricos
-        price = parseFloat(price) / 100; // Ajusta o valor
-        
+      cart.forEach((item, index) => {
+        let price = item.newPrice.replace(/\D+/g, "");
+        price = parseFloat(price) / 100;
         if (!isNaN(price)) {
           total += price;
         }
         
         const itemDiv = document.createElement("div");
         itemDiv.classList.add("cart-item");
+        itemDiv.dataset.index = index;
         itemDiv.innerHTML = `
           <img src="${item.image}" alt="${item.name}">
           <div class="details">
@@ -131,18 +180,105 @@
           </div>
         `;
         cartItemsContainer.appendChild(itemDiv);
+        attachSwipeListeners(itemDiv);
       });
       
       document.getElementById("total").innerText = "Total: R$ " + total.toFixed(2);
     }
     
-    // Função para simular a finalização da compra
+    // Função para detectar o gesto de deslizar para a esquerda e remover o item
+    function attachSwipeListeners(element) {
+      let startX = 0;
+      let currentX = 0;
+      const threshold = 100; // distância mínima para acionar o delete
+      
+      element.addEventListener('touchstart', function(e) {
+        startX = e.touches[0].clientX;
+        element.style.transition = '';
+      }, false);
+      
+      element.addEventListener('touchmove', function(e) {
+        currentX = e.touches[0].clientX;
+        let deltaX = currentX - startX;
+        if (deltaX < 0) { // somente deslizar para a esquerda
+          element.style.transform = `translateX(${deltaX}px)`;
+        }
+      }, false);
+      
+      element.addEventListener('touchend', function(e) {
+        let deltaX = currentX - startX;
+        if (deltaX < -threshold) {
+          element.style.transition = 'transform 0.3s ease-out';
+          element.style.transform = 'translateX(-100%)';
+          setTimeout(() => {
+            let index = parseInt(element.dataset.index);
+            cart.splice(index, 1);
+            localStorage.setItem("cart", JSON.stringify(cart));
+            renderCart();
+          }, 300);
+        } else {
+          element.style.transition = 'transform 0.3s ease-out';
+          element.style.transform = 'translateX(0)';
+        }
+      }, false);
+    }
+    
+    // Atualiza as informações de pagamento com base na seleção do dropdown
+    document.getElementById('pagamento').addEventListener('change', function(){
+      const paymentInfoDiv = document.getElementById('payment-info');
+      if (this.value === 'pix') {
+        paymentInfoDiv.innerText = 'renimarfilho000@gmail.com';
+        paymentInfoDiv.style.display = 'block';
+      } else if (this.value === 'debito' || this.value === 'credito') {
+        paymentInfoDiv.innerHTML = '<a href="https://link.mercadopago.com.br/flowmize" target="_blank" style="color:#02FF85; text-decoration: underline;">Pagamento via MercadoPago</a>';
+        paymentInfoDiv.style.display = 'block';
+      } else {
+        paymentInfoDiv.style.display = 'none';
+      }
+    });
+    
+    // Finaliza a compra, compilando as informações e abrindo o WhatsApp com a mensagem formatada
     function finalizePurchase() {
-      alert("Compra finalizada! Obrigado por comprar conosco.");
-      localStorage.removeItem("cart");
-      setTimeout(() => {
-        window.location.href = "index.html";
-      }, 500);
+      const nome = document.getElementById("nome").value.trim();
+      const endereco = document.getElementById("endereco").value.trim();
+      const telefone = document.getElementById("telefone").value.trim();
+      const pagamento = document.getElementById("pagamento").value;
+      let pagamentoInfo = "";
+      if (pagamento === "pix") {
+        pagamentoInfo = "renimarfilho000@gmail.com";
+      } else if (pagamento === "debito" || pagamento === "credito") {
+        pagamentoInfo = "https://link.mercadopago.com.br/flowmize";
+      }
+      
+      if (!nome || !endereco || !telefone || !pagamento) {
+        alert("Por favor, preencha todos os campos do formulário.");
+        return;
+      }
+      
+      let produtosTexto = "Produtos:\n";
+      cart.forEach(item => {
+        produtosTexto += `- ${item.name}: ${item.newPrice}\n`;
+      });
+      
+      let total = 0;
+      cart.forEach(item => {
+        let price = item.newPrice.replace(/\D+/g, "");
+        price = parseFloat(price) / 100;
+        if (!isNaN(price)) total += price;
+      });
+      produtosTexto += `\nTotal: R$ ${total.toFixed(2)}\n\n`;
+      
+      let entregaTexto = "Dados de Entrega:\n";
+      entregaTexto += `Nome: ${nome}\n`;
+      entregaTexto += `Endereço: ${endereco}\n`;
+      entregaTexto += `Telefone: ${telefone}\n`;
+      entregaTexto += `Forma de Pagamento: ${pagamento.toUpperCase()}\n`;
+      entregaTexto += `Informação de Pagamento: ${pagamentoInfo}\n`;
+      
+      let mensagem = "Olá, gostaria de finalizar a compra:\n\n" + produtosTexto + entregaTexto;
+      let url = "https://wa.me/17996833867?text=" + encodeURIComponent(mensagem);
+      
+      window.open(url, "_blank");
     }
     
     renderCart();
