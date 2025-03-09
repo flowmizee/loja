@@ -93,7 +93,7 @@
     <div id="cart-items"></div>
     <div id="total" class="total"></div>
     <button class="checkout-btn" onclick="finalizePurchase()">Finalizar Compra</button>
-    <a href="produtos.html" class="back-link">Voltar para Produtos</a>
+    <a href="index.html" class="back-link">Voltar para Produtos</a>
   </div>
   <script>
     // Recupera o carrinho salvo no localStorage
@@ -113,8 +113,8 @@
       let total = 0;
       cart.forEach(item => {
         // Converte o preço novo para número
-        let price = item.newPrice.replace(/\D+/g, ""); // Remove tudo que não for número
-        price = parseFloat(price) / 100; // Divide por 100 para corrigir valores
+        let price = item.newPrice.replace(/\D+/g, ""); // Remove caracteres não numéricos
+        price = parseFloat(price) / 100; // Ajusta o valor
         
         if (!isNaN(price)) {
           total += price;
@@ -127,7 +127,7 @@
           <div class="details">
             <h2>${item.name}</h2>
             <p>Preço: R$ ${price.toFixed(2)}</p>
-            <p>${item.Parcelas ? item.Parcelas : ""}</p>
+            <p>${item.parcelas ? item.parcelas : ""}</p>
           </div>
         `;
         cartItemsContainer.appendChild(itemDiv);
@@ -141,7 +141,7 @@
       alert("Compra finalizada! Obrigado por comprar conosco.");
       localStorage.removeItem("cart");
       setTimeout(() => {
-        window.location.href = "produtos.html";
+        window.location.href = "index.html";
       }, 500);
     }
     
