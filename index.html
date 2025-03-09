@@ -144,7 +144,7 @@
     .sidebar a:hover {
       background: #f0f0f0;
     }
-    /* Área de Filtros (agora em coluna) */
+    /* Área de Filtros (em coluna) */
     #filter-container {
       display: flex;
       flex-direction: column;
@@ -162,6 +162,13 @@
       font-size: 1rem;
       border-radius: 30px;
       text-align: center;
+      height: 40px;              /* Altura fixa para igualar os inputs */
+      box-sizing: border-box;    /* Inclui padding e border no tamanho final */
+    }
+    select.filter-input {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
     }
     /* Input readonly para "Ordenar por" com valor fixo */
     #order-by {
@@ -416,4 +423,4 @@
     });
   </script>
 </body>
-  </html>que 
+</html>
