@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Loja de Acessórios</title>
+  <title>Carrinho de Compras</title>
   <style>
-    /* Estilos Globais */
     body {
       margin: 0;
       padding: 0;
@@ -13,350 +12,136 @@
       color: #fff;
       font-family: Arial, sans-serif;
     }
-    /* Cabeçalho */
-    .header {
-      position: fixed;
-      top: 40px; /* Espaço para o banner */
-      left: 0;
-      width: 100%;
+    header {
       background: #000;
       padding: 10px 20px;
-      z-index: 1000;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-sizing: border-box;
+      text-align: center;
       border-bottom: 1px solid rgba(255,255,255,0.2);
     }
-    .header .left { flex: 0 0 auto; }
-    .header .center {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-    .header .center .logo {
-      width: 100px;
-    }
-    .header .right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .header .right span {
-      font-size: 28px;
-      cursor: pointer;
-      display: inline-block;
-    }
-    /* Badge no ícone do carrinho */
-    .cart-count {
-      background: red;
-      color: #fff;
-      border-radius: 50%;
-      padding: 2px 6px;
-      font-size: 0.8rem;
-      position: relative;
-      top: -12px;
-      left: -10px;
-    }
-    /* Texto rolando no topo */
-    .promo-banner {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: #fff;
-      color: #000;
-      text-align: center;
-      padding: 10px 0;
-      font-size: 18px;
-      font-weight: bold;
-      z-index: 1010;
-      overflow: hidden;
-    }
-    .promo-banner p {
+    header h1 {
       margin: 0;
-      white-space: nowrap;
-      animation: scroll-text 10s linear infinite;
-    }
-    @keyframes scroll-text {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
-    }
-    /* Ícone do Menu (Sidebar) */
-    .menu-icon {
-      font-size: 36px;
-      cursor: pointer;
-      display: inline-block;
-    }
-    /* Input de Pesquisa */
-    .search-container {
-      position: absolute;
-      top: 150px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      display: flex;
-      justify-content: center;
-    }
-    .search-input {
-      padding: 10px 15px;
-      font-size: 18px;
-      border: 2px solid #f8c91c;
-      border-radius: 5px;
-      background: #000;
-      color: #fff;
-      outline: none;
-      width: 250px;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease, top 0.3s ease;
-      position: absolute;
-    }
-    .search-input.active {
-      opacity: 1;
-      visibility: visible;
-      top: 0;
-    }
-    /* Sidebar */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 250px;
-      height: 100vh;
-      background: #fff;
-      padding: 90px 20px 20px;
-      transform: translateX(-100%);
-      transition: transform 0.3s ease;
-      z-index: 999;
-    }
-    .sidebar.open {
-      transform: translateX(0);
-    }
-    .sidebar a {
-      display: block;
-      color: #000;
-      text-decoration: none;
-      font-size: 18px;
-      margin: 20px 0;
-      padding: 10px 0;
-    }
-    .sidebar a:hover {
-      background: #f0f0f0;
-    }
-    /* Título da Seção de Produtos */
-    .products-title {
-      margin-top: 220px;
-      text-align: center;
       font-size: 2rem;
-      font-weight: bold;
     }
-    /* Container de Produtos */
-    #products-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
       padding: 20px;
     }
-    .product-card {
-      background: transparent;
-      margin: 10px;
-      padding: 10px;
-      border-radius: 8px;
-      width: 300px;
-      box-sizing: border-box;
-      text-align: center;
+    .cart-item {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #333;
+      padding: 10px 0;
     }
-    /* Contorno afastado para a imagem */
-    .product-image {
-      width: 100%;
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+    .cart-item img {
+      width: 100px;
       height: auto;
       border-radius: 8px;
+      margin-right: 20px;
       outline: 2px solid #fff;
       outline-offset: 5px;
     }
-    .product-description h2 {
-      margin: 10px 0;
-      font-size: 1.5rem;
+    .cart-item .details {
+      flex: 1;
     }
-    .product-description p {
-      margin: 5px 0;
-      font-size: 1rem;
+    .cart-item .details h2 {
+      margin: 0 0 5px;
+      font-size: 1.2rem;
     }
-    /* Preços com estilos distintos */
-    .prices {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
+    .cart-item .details p {
+      margin: 2px 0;
+      font-size: 0.9rem;
     }
-    .prices .old-price {
-      color: gray;
-      text-decoration: line-through;
-      font-size: 1rem;
+    .total {
+      text-align: right;
+      margin-top: 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
     }
-    .prices .new-price {
-      color: #02FF85;
-      font-size: 1rem;
-    }
-    /* Botão Comprar */
-    .buy-button {
+    .checkout-btn {
       display: block;
       width: 100%;
-      border: 1px solid #000;
-      background: #fff;
+      padding: 15px;
+      background: #02FF85;
       color: #000;
-      padding: 10px 0;
-      font-size: 1.3rem;
-      cursor: pointer;
-      margin-top: 10px;
-      border-radius: 30px;
-      font-weight: bold;
+      text-align: center;
       text-transform: uppercase;
+      border: none;
+      border-radius: 30px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
     }
-    /* Animações */
-    @keyframes buttonClick {
-      0% { transform: scale(1); }
-      50% { transform: scale(0.9); }
-      100% { transform: scale(1); }
-    }
-    .button-animate {
-      animation: buttonClick 0.2s ease;
-    }
-    @keyframes iconClick {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-    .icon-animate {
-      animation: iconClick 0.2s ease;
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: #02FF85;
+      text-decoration: none;
+      font-size: 1rem;
     }
   </style>
-  <!-- Biblioteca PapaParse para ler CSV -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 </head>
 <body>
-  <!-- Banner de Promoção (Texto Rolando) -->
-  <div class="promo-banner">
-    <p>Parcele em até 5x sem juros | Frete grátis acima de R$ 300</p>
-  </div>
-  <!-- Cabeçalho -->
-  <header class="header">
-    <div class="left">
-      <span class="menu-icon" onclick="animateIcon(this); toggleSidebar()">☰</span>
-    </div>
-    <div class="center">
-      <img src="logo.png" alt="Logo" class="logo">
-    </div>
-    <div class="right">
-      <span onclick="animateIcon(this); toggleSearch()">🔍</span>
-      <span id="cart-icon" onclick="animateIcon(this); goToCart()">
-        🛒<span id="cart-count" class="cart-count">0</span>
-      </span>
-    </div>
+  <header>
+    <h1>Carrinho de Compras</h1>
   </header>
-  <!-- Input de Pesquisa -->
-  <div class="search-container">
-    <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar...">
+  <div class="container">
+    <div id="cart-items"></div>
+    <div id="total" class="total"></div>
+    <button class="checkout-btn" onclick="finalizePurchase()">Finalizar Compra</button>
+    <a href="index.html" class="back-link">Voltar para Produtos</a>
   </div>
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <a href="#">Produtos</a>
-    <a href="#">Contato</a>
-  </div>
-  <!-- Título -->
-  <h1 class="products-title">Todos os produtos</h1>
-  <!-- Container dos produtos -->
-  <div id="products-container"></div>
-  
   <script>
-    // Variável global para o carrinho
-    let cart = [];
-
-    function toggleSearch() {
-      const searchInput = document.getElementById("searchInput");
-      searchInput.classList.toggle("active");
-      if (searchInput.classList.contains("active")) {
-        searchInput.focus();
-      } else {
-        searchInput.value = "";
+    // Recupera o carrinho salvo no localStorage
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    
+    // Função que renderiza os itens do carrinho
+    function renderCart() {
+      const cartItemsContainer = document.getElementById("cart-items");
+      cartItemsContainer.innerHTML = "";
+      
+      if (cart.length === 0) {
+        cartItemsContainer.innerHTML = "<p>Seu carrinho está vazio.</p>";
+        document.getElementById("total").innerText = "";
+        return;
       }
+      
+      let total = 0;
+      cart.forEach(item => {
+        // Converte o preço novo para número (removendo formatação se necessário)
+        let price = parseFloat(item.newPrice.replace("R$", "").replace(",", "."));
+        if (!isNaN(price)) {
+          total += price;
+        }
+        
+        const itemDiv = document.createElement("div");
+        itemDiv.classList.add("cart-item");
+        itemDiv.innerHTML = `
+          <img src="${item.image}" alt="${item.name}">
+          <div class="details">
+            <h2>${item.name}</h2>
+            <p>Preço: ${item.newPrice}</p>
+            <p>${item.Parcelas ? item.Parcelas : ""}</p>
+          </div>
+        `;
+        cartItemsContainer.appendChild(itemDiv);
+      });
+      
+      document.getElementById("total").innerText = "Total: R$ " + total.toFixed(2);
     }
-
-    function toggleSidebar() {
-      document.getElementById("sidebar").classList.toggle("open");
+    
+    // Função para simular a finalização da compra
+    function finalizePurchase() {
+      alert("Compra finalizada! Obrigado por comprar conosco.");
+      localStorage.removeItem("cart");
+      window.location.href = "index.html";
     }
-
-    // Função para animar ícones
-    function animateIcon(element) {
-      element.classList.add("icon-animate");
-      setTimeout(() => element.classList.remove("icon-animate"), 200);
-    }
-
-    // Função para adicionar produto ao carrinho
-    function addToCart(product, button) {
-      // Animação do botão
-      button.classList.add("button-animate");
-      setTimeout(() => button.classList.remove("button-animate"), 200);
-      // Adiciona produto ao carrinho
-      cart.push(product);
-      // Atualiza o contador do carrinho
-      document.getElementById("cart-count").innerText = cart.length;
-      // Salva no localStorage para uso na página do carrinho
-      localStorage.setItem("cart", JSON.stringify(cart));
-    }
-
-    // Função para redirecionar para a página do carrinho
-    function goToCart() {
-      window.location.href = "cart.html";
-    }
-
-    // Carrega a planilha CSV e exibe os produtos
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNzpkH5z5PPki-w88HnOUlMhdOpdD_Yjp4Y6JB7hyaHp90OSvhcVpnrWUR-Ghx2RMEg05nM13suulk/pub?output=csv";
-
-    Papa.parse(csvUrl, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        const data = results.data;
-        const container = document.getElementById("products-container");
-        data.forEach(item => {
-          if (!item.Nome || item.Nome.trim() === "") return;
-
-          // Cria objeto de produto para usar no carrinho
-          const product = {
-            name: item.Nome,
-            oldPrice: item["Preço Antigo"],
-            newPrice: item["Preço Novo"],
-            parcelas: item.Parcelas,
-            image: item["URL da Imagem"]
-          };
-
-          // Cria o card do produto
-          const card = document.createElement("div");
-          card.classList.add("product-card");
-          card.innerHTML = `
-            <img src="${item["URL da Imagem"]}" alt="${item.Nome}" class="product-image">
-            <div class="product-description">
-              <h2>${item.Nome}</h2>
-              <div class="prices">
-                <p class="old-price">${item["Preço Antigo"]}</p>
-                <p class="new-price">${item["Preço Novo"]}</p>
-              </div>
-              <p>${item.Parcelas}</p>
-              <button class="buy-button">Comprar</button>
-            </div>
-          `;
-          container.appendChild(card);
-          
-          // Adiciona o evento no botão "Comprar"
-          const buyButton = card.querySelector(".buy-button");
-          buyButton.addEventListener("click", function() {
-            addToCart(product, buyButton);
-          });
-        });
-      }
-    });
+    
+    renderCart();
   </script>
 </body>
-  </html>
+</html>
