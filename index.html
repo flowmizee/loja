@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -143,12 +144,38 @@
     .sidebar a:hover {
       background: #f0f0f0;
     }
+    /* Filtros */
+    #filter-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      max-width: 800px;
+      margin: 220px auto 10px auto; /* abaixo do header e antes do título de produtos */
+      padding: 0 20px;
+    }
+    .filter-input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #fff;
+      background: transparent;
+      color: #fff;
+      font-size: 1rem;
+      border-radius: 30px;
+      text-align: center;
+    }
+    #product-count {
+      display: block;
+      text-align: center;
+      margin: 10px auto;
+      font-size: 1.2rem;
+      max-width: 800px;
+    }
     /* Título da Seção de Produtos */
     .products-title {
-      margin-top: 220px;
       text-align: center;
       font-size: 2rem;
       font-weight: bold;
+      margin: 10px auto;
     }
     /* Container de Produtos */
     #products-container {
@@ -156,6 +183,8 @@
       flex-wrap: wrap;
       justify-content: center;
       padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
     }
     .product-card {
       background: transparent;
@@ -245,7 +274,6 @@
       <span class="menu-icon" onclick="animateIcon(this); toggleSidebar()">☰</span>
     </div>
     <div class="center">
-      <!-- Se preferir, altere para "logo.png" se o arquivo estiver na raiz -->
       <img src="logo.png" alt="Logo" class="logo">
     </div>
     <div class="right">
@@ -264,12 +292,28 @@
     <a href="#">Produtos</a>
     <a href="#">Contato</a>
   </div>
+  
+  <!-- Área de Filtros -->
+  <div id="filter-container">
+    <input type="text" id="order-by" class="filter-input" placeholder="Ordenar por">
+    <select id="category" class="filter-input">
+      <option value="">Categoria</option>
+      <option value="Anel">Anel</option>
+      <option value="Pulseira">Pulseira</option>
+      <option value="Relógio">Relógio</option>
+    </select>
+  </div>
+  <span id="product-count"></span>
+  
   <!-- Título -->
   <h1 class="products-title">Todos os produtos</h1>
   <!-- Container dos produtos -->
-  <div id="products-container"></div>  <script>
-    // Variável global para o carrinho
-    let cart = [];
+  <div id="products-container"></div>
+  
+  <script>
+    // Variáveis globais para o carrinho e para armazenar todos os produtos carregados
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let allProducts = []; // Array para armazenar os produtos do CSV
 
     function toggleSearch() {
       const searchInput = document.getElementById("searchInput");
@@ -293,68 +337,94 @@
 
     // Função para adicionar produto ao carrinho
     function addToCart(product, button) {
-      // Animação do botão
       button.classList.add("button-animate");
       setTimeout(() => button.classList.remove("button-animate"), 200);
-      // Adiciona produto ao carrinho
       cart.push(product);
-      // Atualiza o contador do carrinho
       document.getElementById("cart-count").innerText = cart.length;
-      // Salva no localStorage para uso na página do carrinho
       localStorage.setItem("cart", JSON.stringify(cart));
     }
 
     // Função para redirecionar para a página do carrinho
     function goToCart() {
-      // Redireciona para "produtos.html" (ajustado para ter apenas dois arquivos)
       window.location.href = "produtos.html";
     }
 
-    // Carrega a planilha CSV e exibe os produtos
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNzpkH5z5PPki-w88HnOUlMhdOpdD_Yjp4Y6JB7hyaHp90OSvhcVpnrWUR-Ghx2RMEg05nM13suulk/pub?output=csv";
+    // Função para renderizar os produtos
+    function renderProducts(products) {
+      const container = document.getElementById("products-container");
+      container.innerHTML = "";
+      products.forEach(product => {
+        // Cria o card do produto
+        const card = document.createElement("div");
+        card.classList.add("product-card");
+        card.innerHTML = `
+          <img src="${product["URL da Imagem"]}" alt="${product.Nome}" class="product-image">
+          <div class="product-description">
+            <h2>${product.Nome}</h2>
+            <div class="prices">
+              <p class="old-price">${product["Preço Antigo"]}</p>
+              <p class="new-price">${product["Preço Novo"]}</p>
+            </div>
+            <p>${product.Parcelas}</p>
+            <button class="buy-button">Comprar</button>
+          </div>
+        `;
+        container.appendChild(card);
+        const buyButton = card.querySelector(".buy-button");
+        buyButton.addEventListener("click", function() {
+          addToCart({
+            name: product.Nome,
+            oldPrice: product["Preço Antigo"],
+            newPrice: product["Preço Novo"],
+            parcelas: product.Parcelas,
+            image: product["URL da Imagem"]
+          }, buyButton);
+        });
+      });
+      // Atualiza a quantidade de produtos encontrados
+      document.getElementById("product-count").innerText = products.length + " produto(s) encontrado(s)";
+    }
 
+    // Evento para filtro por Categoria e ordenação
+    function applyFilters() {
+      let filtered = allProducts.slice();
+      const category = document.getElementById("category").value;
+      const orderBy = document.getElementById("order-by").value.trim().toLowerCase();
+      
+      if (category) {
+        filtered = filtered.filter(product =>
+          product.Nome.toLowerCase().includes(category.toLowerCase())
+        );
+      }
+      
+      // Ordenação simples: se o campo "Ordenar por" contiver "nome" ou "preço"
+      if (orderBy.includes("nome")) {
+        filtered.sort((a, b) => a.Nome.localeCompare(b.Nome));
+      } else if (orderBy.includes("preco") || orderBy.includes("preço")) {
+        filtered.sort((a, b) => {
+          let priceA = parseFloat(a["Preço Novo"].replace(/\D+/g, "")) / 100;
+          let priceB = parseFloat(b["Preço Novo"].replace(/\D+/g, "")) / 100;
+          return priceA - priceB;
+        });
+      }
+      renderProducts(filtered);
+    }
+
+    // Eventos para filtro: dispara quando mudar a categoria ou o campo ordenar por
+    document.getElementById("category").addEventListener("change", applyFilters);
+    document.getElementById("order-by").addEventListener("change", applyFilters);
+
+    // Carrega a planilha CSV e armazena os produtos
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNzpkH5z5PPki-w88HnOUlMhdOpdD_Yjp4Y6JB7hyaHp90OSvhcVpnrWUR-Ghx2RMEg05nM13suulk/pub?output=csv";
     Papa.parse(csvUrl, {
       download: true,
       header: true,
       complete: function(results) {
-        const data = results.data;
-        const container = document.getElementById("products-container");
-        data.forEach(item => {
-          if (!item.Nome || item.Nome.trim() === "") return;
-
-          // Cria objeto de produto para usar no carrinho
-          const product = {
-            name: item.Nome,
-            oldPrice: item["Preço Antigo"],
-            newPrice: item["Preço Novo"],
-            parcelas: item.Parcelas,
-            image: item["URL da Imagem"]
-          };
-
-          // Cria o card do produto
-          const card = document.createElement("div");
-          card.classList.add("product-card");
-          card.innerHTML = `
-            <img src="${item["URL da Imagem"]}" alt="${item.Nome}" class="product-image">
-            <div class="product-description">
-              <h2>${item.Nome}</h2>
-              <div class="prices">
-                <p class="old-price">${item["Preço Antigo"]}</p>
-                <p class="new-price">${item["Preço Novo"]}</p>
-              </div>
-              <p>${item.Parcelas}</p>
-              <button class="buy-button">Comprar</button>
-            </div>
-          `;
-          container.appendChild(card);
-          
-          // Adiciona o evento no botão "Comprar"
-          const buyButton = card.querySelector(".buy-button");
-          buyButton.addEventListener("click", function() {
-            addToCart(product, buyButton);
-          });
-        });
+        // Filtra os produtos que possuem nome
+        allProducts = results.data.filter(item => item.Nome && item.Nome.trim() !== "");
+        renderProducts(allProducts);
       }
     });
-  </script></body>
+  </script>
+</body>
 </html>
