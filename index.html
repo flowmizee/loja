@@ -27,6 +27,7 @@
       align-items: center;
       box-sizing: border-box;
       border-bottom: 1px solid rgba(255,255,255,0.2);
+      transition: top 0.3s ease;
     }
     .header .left { flex: 0 0 auto; }
     .header .center {
@@ -58,7 +59,7 @@
       top: -12px;
       left: -10px;
     }
-    /* Texto rolando no topo */
+    /* Banner de Promoção (Texto Rolando) */
     .promo-banner {
       position: fixed;
       top: 0;
@@ -72,6 +73,11 @@
       font-weight: bold;
       z-index: 1010;
       overflow: hidden;
+      transition: opacity 0.3s ease;
+    }
+    .promo-banner.hidden {
+      opacity: 0;
+      pointer-events: none;
     }
     .promo-banner p {
       margin: 0;
@@ -131,7 +137,7 @@
         width: 500px;
       }
     }
-    /* Sidebar */
+    /* Sidebar com Instagram e WhatsApp */
     .sidebar {
       position: fixed;
       top: 0;
@@ -364,6 +370,7 @@
   <h1 class="products-title">Todos os Produtos</h1>
   <!-- Container dos produtos -->
   <div id="products-container"></div>
+  
   <script>
     // Recupera o carrinho do localStorage ou cria um array vazio
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -489,6 +496,19 @@
         renderProducts(allProducts);
       }
     });
+
+    // Script para esconder o banner e reposicionar o cabeçalho ao rolar a página
+    window.addEventListener("scroll", function() {
+      const banner = document.querySelector(".promo-banner");
+      const header = document.querySelector(".header");
+      if (window.scrollY > 0) {
+        banner.classList.add("hidden");
+        header.style.top = "0";
+      } else {
+        banner.classList.remove("hidden");
+        header.style.top = "40px";
+      }
+    });
   </script>
 </body>
-</html>
+      </html>
