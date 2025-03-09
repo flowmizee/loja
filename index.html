@@ -319,8 +319,8 @@
   <!-- Exibe a quantidade de produtos encontrados -->
   <span id="product-count"></span>
   
-  <!-- Título -->
-  <h1 class="products-title">Todos os produtos</h1>
+  <!-- Título da Seção de Produtos -->
+  <h1 class="products-title">Todos os Produtos</h1>
   <!-- Container dos produtos -->
   <div id="products-container"></div>
   
@@ -397,15 +397,22 @@
       document.getElementById("product-count").innerText = products.length + " produto(s) encontrado(s)";
     }
 
-    // Função de filtro por Categoria (o input "Ordenar por" não é editável)
+    // Função de filtro por Categoria e atualização do título
     function applyFilters() {
       let filtered = allProducts.slice();
       const category = document.getElementById("category").value;
-      if (category && category !== "all") {
+      const titleElement = document.querySelector('.products-title');
+      
+      // Atualiza o título com base na seleção
+      if (category === "all") {
+        titleElement.textContent = "Todos os Produtos";
+      } else {
+        titleElement.textContent = category;
         filtered = filtered.filter(product =>
           product.Nome.toLowerCase().includes(category.toLowerCase())
         );
       }
+      
       renderProducts(filtered);
     }
 
