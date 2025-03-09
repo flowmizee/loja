@@ -39,7 +39,8 @@
     }
     .cart-item img {
       width: 100px;
-      height: auto;
+      height: 100px;
+      object-fit: contain;
       border-radius: 8px;
       margin-right: 20px;
       outline: 2px solid #fff;
@@ -227,7 +228,7 @@
       }, false);
     }
     
-    // Finaliza a compra e envia os dados via WhatsApp
+    // Finaliza a compra e envia os dados via WhatsApp com formatação
     function finalizePurchase() {
       const nome = document.getElementById("nome").value.trim();
       const estado = document.getElementById("estado").value.trim();
@@ -244,16 +245,16 @@
       
       let pagamentoInfo = "";
       if (pagamento === "pix") {
-        pagamentoInfo = "Forma de pagamento: Pix\nChave Pix: renimarfilho000@gmail.com";
+        pagamentoInfo = "*Forma de pagamento:* Pix\n*Chave Pix:* renimarfilho000@gmail.com";
       } else if (pagamento === "credito") {
-        pagamentoInfo = "Forma de pagamento: Cartão de Crédito\nLink para Pagamento: https://link.mercadopago.com.br/flowmize";
+        pagamentoInfo = "*Forma de pagamento:* Cartão de Crédito\n*Link para Pagamento:* https://link.mercadopago.com.br/flowmize";
       } else if (pagamento === "debito") {
-        pagamentoInfo = "Forma de pagamento: Cartão de Débito\nLink para Pagamento: https://link.mercadopago.com.br/flowmize";
+        pagamentoInfo = "*Forma de pagamento:* Cartão de Débito\n*Link para Pagamento:* https://link.mercadopago.com.br/flowmize";
       }
       
-      let produtosTexto = "Produtos:\n";
+      let produtosTexto = "*Produtos:*\n";
       cart.forEach(item => {
-        produtosTexto += `- ${item.name}: ${item.newPrice}\n`;
+        produtosTexto += `- *${item.name}* - Preço: *${item.newPrice}*\n`;
       });
       
       let total = 0;
@@ -262,15 +263,15 @@
         price = parseFloat(price) / 100;
         if (!isNaN(price)) total += price;
       });
-      produtosTexto += `\nTotal: R$ ${total.toFixed(2)}\n\n`;
+      produtosTexto += `\n*Total:* R$ ${total.toFixed(2)}\n\n`;
       
-      let entregaTexto = "Dados de Entrega:\n";
-      entregaTexto += `Nome: ${nome}\n`;
-      entregaTexto += `Estado: ${estado}\n`;
-      entregaTexto += `Cidade: ${cidade}\n`;
-      entregaTexto += `Endereço: ${endereco}\n`;
-      entregaTexto += `Complemento: ${complemento}\n`;
-      entregaTexto += `Ponto de Referência: ${ponto}\n`;
+      let entregaTexto = "*Dados de Entrega:*\n";
+      entregaTexto += `*Nome:* ${nome}\n`;
+      entregaTexto += `*Estado:* ${estado}\n`;
+      entregaTexto += `*Cidade:* ${cidade}\n`;
+      entregaTexto += `*Endereço:* ${endereco}\n`;
+      if(complemento) entregaTexto += `*Complemento:* ${complemento}\n`;
+      if(ponto) entregaTexto += `*Ponto de Referência:* ${ponto}\n`;
       entregaTexto += `${pagamentoInfo}\n`;
       
       let mensagem = "Olá, gostaria de finalizar a compra:\n\n" + produtosTexto + entregaTexto;
