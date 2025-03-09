@@ -63,7 +63,7 @@
       font-size: 1.2rem;
       font-weight: bold;
     }
-    .checkout-btn {
+    .checkout-btn, .send-btn {
       display: block;
       width: 100%;
       padding: 15px;
@@ -85,12 +85,27 @@
       text-decoration: none;
       font-size: 1rem;
     }
-    /* Estilo do formulário de entrega */
-    #delivery-form {
-      margin-top: 20px;
+    /* Container do formulário que desliza de baixo para cima */
+    #form-container {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 50vh;
       background: #111;
-      padding: 15px;
-      border-radius: 8px;
+      transform: translateY(100%);
+      transition: transform 0.5s ease-out;
+      z-index: 1000;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+    #form-container.show {
+      transform: translateY(0);
+    }
+    /* Formulário de entrega */
+    #delivery-form {
+      width: 100%;
     }
     #delivery-form label {
       display: block;
@@ -117,7 +132,13 @@
     <div id="cart-items"></div>
     <div id="total" class="total"></div>
     
-    <!-- Formulário de Entrega -->
+    <!-- Botão que exibe o formulário -->
+    <button class="checkout-btn" onclick="showForm()">Finalizar Compra</button>
+    <a href="index.html" class="back-link">Voltar para Produtos</a>
+  </div>
+  
+  <!-- Container do formulário de entrega, inicialmente oculto -->
+  <div id="form-container">
     <form id="delivery-form">
       <label for="nome">Nome:</label>
       <input type="text" id="nome" name="nome" required>
@@ -145,9 +166,8 @@
         <option value="debito">Cartão de Débito</option>
       </select>
     </form>
-    
-    <button class="checkout-btn" onclick="finalizePurchase()">Finalizar Compra</button>
-    <a href="index.html" class="back-link">Voltar para Produtos</a>
+    <!-- Botão para enviar o pedido -->
+    <button class="send-btn" onclick="finalizePurchase()">ENVIAR PEDIDO</button>
   </div>
   
   <script>
@@ -228,6 +248,11 @@
       }, false);
     }
     
+    // Exibe o formulário deslizando de baixo para cima
+    function showForm() {
+      document.getElementById("form-container").classList.add("show");
+    }
+    
     // Finaliza a compra e envia os dados via WhatsApp com formatação
     function finalizePurchase() {
       const nome = document.getElementById("nome").value.trim();
@@ -275,7 +300,7 @@
       entregaTexto += `${pagamentoInfo}\n`;
       
       let mensagem = "Olá, gostaria de finalizar a compra:\n\n" + produtosTexto + entregaTexto;
-      let url = "https://wa.me/5517996833867?text=" + encodeURIComponent(mensagem);
+      let url = "https://wa.me/17996833867?text=" + encodeURIComponent(mensagem);
       
       window.open(url, "_blank");
     }
