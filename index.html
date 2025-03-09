@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!DOCTYPE html><html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -268,11 +267,9 @@
   <!-- Título -->
   <h1 class="products-title">Todos os produtos</h1>
   <!-- Container dos produtos -->
-  <div id="products-container"></div>
-  
-  <script>
-    // Recupera o carrinho salvo no localStorage, se existir; caso contrário, inicia com um array vazio
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  <div id="products-container"></div>  <script>
+    // Variável global para o carrinho
+    let cart = [];
 
     function toggleSearch() {
       const searchInput = document.getElementById("searchInput");
@@ -309,7 +306,7 @@
 
     // Função para redirecionar para a página do carrinho
     function goToCart() {
-      // Redireciona para "produtos.html" (que contém o carrinho)
+      // Redireciona para "produtos.html" (ajustado para ter apenas dois arquivos)
       window.location.href = "produtos.html";
     }
 
@@ -359,6 +356,5 @@
         });
       }
     });
-  </script>
-</body>
+  </script></body>
 </html>
