@@ -342,9 +342,15 @@
   <div id="products-container"></div>
   
   <script>
-    // Variáveis globais para o carrinho e para armazenar todos os produtos do CSV
+    // Recupera o carrinho do localStorage ou cria um array vazio
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     let allProducts = []; 
+
+    // Atualiza o contador do carrinho ao carregar a página
+    window.addEventListener("load", function() {
+      cart = JSON.parse(localStorage.getItem("cart")) || [];
+      document.getElementById("cart-count").innerText = cart.length;
+    });
 
     function toggleSearch() {
       const searchInput = document.getElementById("searchInput");
