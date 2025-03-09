@@ -61,13 +61,11 @@
       z-index: 1010; /* Fica sobre o cabeçalho e sidebar */
       overflow: hidden;
     }
-
     .promo-banner p {
       margin: 0;
       white-space: nowrap;
       animation: scroll-text 10s linear infinite;
     }
-
     @keyframes scroll-text {
       0% {
         transform: translateX(100%);
@@ -78,13 +76,13 @@
     }
     /* Ícone do Menu (Sidebar) */
     .menu-icon {
-      font-size: 36px; /* Aumenta o tamanho do ícone do menu */
+      font-size: 36px;
       cursor: pointer;
     }
     /* Input de Pesquisa */
     .search-container {
       position: absolute;
-      top: 150px; /* Ajustado para ficar acima do título */
+      top: 150px;
       left: 50%;
       transform: translateX(-50%);
       width: 100%;
@@ -108,7 +106,7 @@
     .search-input.active {
       opacity: 1;
       visibility: visible;
-      top: 0; /* Ajustado para o campo aparecer no lugar certo */
+      top: 0;
     }
     /* Sidebar */
     .sidebar {
@@ -118,7 +116,7 @@
       width: 250px;
       height: 100vh;
       background: #fff;
-      padding: 90px 20px 20px; /* Ajustado o padding superior */
+      padding: 90px 20px 20px;
       transform: translateX(-100%);
       transition: transform 0.3s ease;
       z-index: 999;
@@ -139,19 +137,77 @@
     }
     /* Título da Seção de Produtos */
     .products-title {
-      margin-top: 220px; /* Ajustado para um pouco acima do valor anterior */
+      margin-top: 220px;
       text-align: center;
       font-size: 2rem;
       font-weight: bold;
     }
+    /* Container de Produtos */
+    #products-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+    }
+    .product-card {
+      background: #111;
+      margin: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      width: 300px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    .product-image {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+    .product-description h2 {
+      margin: 10px 0;
+      font-size: 1.5rem;
+    }
+    .product-description p {
+      margin: 5px 0;
+      font-size: 1rem;
+    }
+    /* Preços com estilos distintos */
+    .prices {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    .prices .old-price {
+      color: gray;
+      text-decoration: line-through;
+      font-size: 1rem;
+    }
+    .prices .new-price {
+      color: #02FF85;
+      font-size: 1rem;
+    }
+    /* Botão Comprar */
+    .buy-button {
+      border: 1px solid #000;
+      background: #fff;
+      color: #000;
+      padding: 12px 24px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      margin-top: 10px;
+      border-radius: 5px;
+      font-weight: 300;
+    }
   </style>
+  <!-- Inclua a biblioteca PapaParse para parsear CSV -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 </head>
 <body>
   <!-- Banner de Promoção (Texto Rolando) -->
   <div class="promo-banner">
     <p>Parcele em até 5x sem juros | Frete grátis acima de R$ 300</p>
   </div>
-
   <!-- Cabeçalho -->
   <header class="header">
     <div class="left">
@@ -165,21 +221,19 @@
       <span>🛒</span>
     </div>
   </header>
-
   <!-- Input de Pesquisa (Centralizado e Mais Baixo) -->
   <div class="search-container">
     <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar...">
   </div>
-
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <a href="#">Produtos</a>
     <a href="#">Contato</a>
   </div>
-  
   <!-- Título -->
   <h1 class="products-title">Todos os produtos</h1>
-
+  <!-- Container dos produtos -->
+  <div id="products-container"></div>
   <script>
     function toggleSearch() {
       const searchInput = document.getElementById("searchInput");
@@ -194,6 +248,38 @@
     function toggleSidebar() {
       document.getElementById("sidebar").classList.toggle("open");
     }
+
+    // URL da planilha publicada em CSV
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNzpkH5z5PPki-w88HnOUlMhdOpdD_Yjp4Y6JB7hyaHp90OSvhcVpnrWUR-Ghx2RMEg05nM13suulk/pub?output=csv";
+
+    // Carrega a planilha e exibe os produtos
+    Papa.parse(csvUrl, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const data = results.data;
+        const container = document.getElementById("products-container");
+        data.forEach(item => {
+          // Ignora linhas vazias
+          if (!item.Nome || item.Nome.trim() === "") return;
+          const card = document.createElement("div");
+          card.classList.add("product-card");
+          card.innerHTML = `
+            <img src="${item["URL da Imagem"]}" alt="${item.Nome}" class="product-image">
+            <div class="product-description">
+              <h2>${item.Nome}</h2>
+              <div class="prices">
+                <p class="old-price">${item["Preço Antigo"]}</p>
+                <p class="new-price">${item["Preço Novo"]}</p>
+              </div>
+              <p>${item.Parcelas}</p>
+              <button class="buy-button">Comprar</button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      }
+    });
   </script>
 </body>
-</html>
+  </html>
