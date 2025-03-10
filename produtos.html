@@ -221,7 +221,7 @@
       let totalItens = 0;
       
       cart.forEach((item, index) => {
-        // Se o item não tiver a propriedade 'quantity', define como 1
+        // Define a quantidade padrão se não estiver definida
         if (!item.quantity) {
           item.quantity = 1;
         }
@@ -270,7 +270,7 @@
           updateCart();
         });
   
-        // Mantém a funcionalidade de swipe para remoção (opcional)
+        // Função opcional para swipe e remoção do item
         attachSwipeListeners(itemDiv);
       });
       
@@ -362,8 +362,15 @@
       }, false);
     }
     
-    // Finaliza a compra e envia os dados via WhatsApp com formatação
+    // Finaliza a compra e envia os dados via WhatsApp com formatação,
+    // somente se houver produtos no carrinho
     function finalizePurchase() {
+      // Verifica se há itens no carrinho
+      if (cart.length === 0) {
+        alert("Seu carrinho está vazio.");
+        return;
+      }
+      
       const nome = document.getElementById("nome").value.trim();
       const estado = document.getElementById("estado").value.trim();
       const cidade = document.getElementById("cidade").value.trim();
@@ -404,8 +411,8 @@
       entregaTexto += `*Estado:* ${estado}\n`;
       entregaTexto += `*Cidade:* ${cidade}\n`;
       entregaTexto += `*Endereço:* ${endereco}\n`;
-      if(complemento) entregaTexto += `*Complemento:* ${complemento}\n`;
-      if(ponto) entregaTexto += `*Ponto de Referência:* ${ponto}\n`;
+      if (complemento) entregaTexto += `*Complemento:* ${complemento}\n`;
+      if (ponto) entregaTexto += `*Ponto de Referência:* ${ponto}\n`;
       entregaTexto += `${pagamentoInfo}\n`;
       
       let mensagem = "Olá, gostaria de finalizar a compra:\n\n" + produtosTexto + entregaTexto;
