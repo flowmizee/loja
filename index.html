@@ -308,6 +308,45 @@
     .icon-animate {
       animation: iconClick 0.2s ease;
     }
+    /* Modais */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1100;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: #000;
+      color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+    }
+    .modal-button {
+      padding: 10px 15px;
+      margin: 5px;
+      border: 1px solid #fff;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    .modal-button:hover {
+      background: #fff;
+      color: #000;
+    }
   </style>
   <!-- Biblioteca PapaParse para ler CSV -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
@@ -371,17 +410,42 @@
   <!-- Container dos produtos -->
   <div id="products-container"></div>
   
+  <!-- Modal para seleção de tamanho do anel -->
+  <div id="ring-size-modal" class="modal">
+    <div class="modal-content">
+      <h2>Selecione o tamanho do anel</h2>
+      <div id="ring-size-options"></div>
+      <button id="ring-size-cancel" class="modal-button">Cancelar</button>
+    </div>
+  </div>
+  
+  <!-- Modal de instruções para medir o dedo -->
+  <div id="measurement-modal" class="modal">
+    <div class="modal-content">
+      <h2>Como medir o tamanho do seu anel</h2>
+      <p>Siga estas instruções para medir o tamanho do seu dedo:</p>
+      <img src="measurement.png" alt="Como medir" style="width:100%; border-radius:8px; margin:10px 0;">
+      <div class="modal-buttons">
+        <button id="view-measure" class="modal-button">VEJA COMO MEDIR SEU DEDO</button>
+        <button id="continue-cart" class="modal-button">CONTINUAR PARA O CARRINHO</button>
+        <button id="cancel-measure" class="modal-button">CANCELAR</button>
+      </div>
+    </div>
+  </div>
+  
   <script>
     // Recupera o carrinho do localStorage ou cria um array vazio
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     let allProducts = []; 
-
+    let currentRingProduct = null;
+    let selectedRingSize = null;
+  
     // Atualiza o contador do carrinho ao carregar a página
     window.addEventListener("load", function() {
       cart = JSON.parse(localStorage.getItem("cart")) || [];
       document.getElementById("cart-count").innerText = cart.length;
     });
-
+  
     function toggleSearch() {
       const searchInput = document.getElementById("searchInput");
       searchInput.classList.toggle("active");
@@ -396,31 +460,33 @@
         video.play();
       }
     }
-
+  
     function toggleSidebar() {
       document.getElementById("sidebar").classList.toggle("open");
     }
-
+  
     // Função para animar ícones
     function animateIcon(element) {
       element.classList.add("icon-animate");
       setTimeout(() => element.classList.remove("icon-animate"), 200);
     }
-
+  
     // Função para adicionar produto ao carrinho
     function addToCart(product, button) {
-      button.classList.add("button-animate");
-      setTimeout(() => button.classList.remove("button-animate"), 200);
+      if(button){
+        button.classList.add("button-animate");
+        setTimeout(() => button.classList.remove("button-animate"), 200);
+      }
       cart.push(product);
       document.getElementById("cart-count").innerText = cart.length;
       localStorage.setItem("cart", JSON.stringify(cart));
     }
-
+  
     // Função para redirecionar para a página do carrinho
     function goToCart() {
       window.location.href = "produtos.html";
     }
-
+  
     // Função para renderizar os produtos
     function renderProducts(products) {
       const container = document.getElementById("products-container");
@@ -436,25 +502,32 @@
               <p class="old-price">${product["Preço Antigo"]}</p>
               <p class="new-price">${product["Preço Novo"]}</p>
             </div>
-            <p>${product.Parcelas}</p>
+            <p>${product.Parcelas || ""}</p>
             <button class="buy-button">Comprar</button>
           </div>
         `;
         container.appendChild(card);
         const buyButton = card.querySelector(".buy-button");
-        buyButton.addEventListener("click", function() {
-          addToCart({
-            name: product.Nome,
-            oldPrice: product["Preço Antigo"],
-            newPrice: product["Preço Novo"],
-            parcelas: product.Parcelas,
-            image: product["URL da Imagem"]
-          }, buyButton);
-        });
+        // Se o produto for um anel, mostra o modal para seleção do tamanho
+        if(product.Nome.toLowerCase().includes("anel")){
+          buyButton.addEventListener("click", function() {
+            showRingSizeModal(product);
+          });
+        } else {
+          buyButton.addEventListener("click", function() {
+            addToCart({
+              name: product.Nome,
+              oldPrice: product["Preço Antigo"],
+              newPrice: product["Preço Novo"],
+              parcelas: product.Parcelas,
+              image: product["URL da Imagem"]
+            }, buyButton);
+          });
+        }
       });
       document.getElementById("product-count").innerText = products.length + " produto(s) encontrado(s)";
     }
-
+  
     // Função para filtrar os produtos com base na categoria e no texto de pesquisa
     function filterProducts() {
       let filtered = allProducts.slice();
@@ -481,11 +554,11 @@
       
       renderProducts(filtered);
     }
-
+  
     // Eventos: filtra ao alterar a categoria ou ao digitar na pesquisa
     document.getElementById("category").addEventListener("change", filterProducts);
     document.getElementById("searchInput").addEventListener("input", filterProducts);
-
+  
     // Carrega a planilha CSV e armazena os produtos
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNzpkH5z5PPki-w88HnOUlMhdOpdD_Yjp4Y6JB7hyaHp90OSvhcVpnrWUR-Ghx2RMEg05nM13suulk/pub?output=csv";
     Papa.parse(csvUrl, {
@@ -496,7 +569,7 @@
         renderProducts(allProducts);
       }
     });
-
+  
     // Script para esconder o banner e reposicionar o cabeçalho ao rolar a página
     window.addEventListener("scroll", function() {
       const banner = document.querySelector(".promo-banner");
@@ -509,6 +582,76 @@
         header.style.top = "40px";
       }
     });
+  
+    /* Funções para modais de seleção de tamanho e instruções de medição */
+  
+    // Abre o modal de seleção de tamanho para anéis
+    function showRingSizeModal(product) {
+      currentRingProduct = product;
+      selectedRingSize = null;
+      const optionsContainer = document.getElementById("ring-size-options");
+      optionsContainer.innerHTML = "";
+  
+      // Assume que a planilha possui as colunas "Tamanhos" e "Estoque" para os anéis
+      let sizes = [];
+      let stocks = [];
+      if (product["Tamanhos"]) {
+        sizes = product["Tamanhos"].split(",").map(s => s.trim());
+      }
+      if (product["Estoque"]) {
+        stocks = product["Estoque"].split(",").map(s => s.trim());
+      }
+  
+      sizes.forEach((size, index) => {
+        const stock = stocks[index] || "0";
+        const btn = document.createElement("button");
+        btn.textContent = `Tamanho ${size} - Restam ${stock}`;
+        btn.classList.add("modal-button");
+        btn.onclick = function() {
+          selectedRingSize = size;
+          closeModal("ring-size-modal");
+          showMeasurementModal();
+        };
+        optionsContainer.appendChild(btn);
+      });
+  
+      openModal("ring-size-modal");
+    }
+  
+    // Abre o modal de instruções para medir o dedo
+    function showMeasurementModal() {
+      openModal("measurement-modal");
+    }
+  
+    // Eventos dos botões do modal de instruções
+    document.getElementById("continue-cart").addEventListener("click", function() {
+      // Adiciona o produto ao carrinho com o tamanho selecionado
+      const productToAdd = Object.assign({}, currentRingProduct);
+      productToAdd.tamanho = selectedRingSize;
+      addToCart(productToAdd, null);
+      closeModal("measurement-modal");
+    });
+  
+    document.getElementById("cancel-measure").addEventListener("click", function() {
+      closeModal("measurement-modal");
+    });
+  
+    document.getElementById("ring-size-cancel").addEventListener("click", function() {
+      closeModal("ring-size-modal");
+    });
+  
+    document.getElementById("view-measure").addEventListener("click", function() {
+      alert("Aqui você verá instruções detalhadas sobre como medir seu dedo.");
+    });
+  
+    // Funções utilitárias para abrir e fechar modais
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add("active");
+    }
+  
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove("active");
+    }
   </script>
 </body>
-      </html>
+</html>
