@@ -164,7 +164,7 @@
     
     <!-- Botão que exibe o formulário -->
     <button class="checkout-btn" onclick="showForm()">Finalizar Compra</button>
-    <!-- Esse link apenas navega de volta para a página de produtos -->
+    <!-- Link para voltar à página de produtos -->
     <a href="index.html" class="back-link">Voltar para Produtos</a>
   </div>
   
@@ -270,13 +270,12 @@
           updateCart();
         });
   
-        // Função opcional para swipe e remoção do item
+        // Função para detectar gesto de deslizar e remover o item
         attachSwipeListeners(itemDiv);
       });
       
       document.getElementById("total").innerText = "Total: R$ " + total.toFixed(2);
       document.getElementById("cart-count-display").innerText = "Itens no carrinho: " + totalItens;
-      // Salva as alterações no localStorage
       localStorage.setItem("cart", JSON.stringify(cart));
     }
     
@@ -299,7 +298,7 @@
       element.addEventListener('touchmove', function(e) {
         currentX = e.touches[0].clientX;
         let deltaX = currentX - startX;
-        if (deltaX < 0) { // somente para deslize à esquerda
+        if (deltaX < 0) { // somente deslize à esquerda
           element.style.transform = `translateX(${deltaX}px)`;
         }
       }, false);
@@ -341,7 +340,7 @@
       formContainer.addEventListener('touchmove', function(e) {
         currentY = e.touches[0].clientY;
         let deltaY = currentY - startY;
-        if (deltaY > 0) { // apenas para deslizar para baixo
+        if (deltaY > 0) { // apenas deslizar para baixo
           formContainer.style.transform = `translateY(${deltaY}px)`;
         }
       }, false);
@@ -362,10 +361,8 @@
       }, false);
     }
     
-    // Finaliza a compra e envia os dados via WhatsApp com formatação,
-    // somente se houver produtos no carrinho
+    // Finaliza a compra e envia os dados via WhatsApp, somente se houver produtos no carrinho
     function finalizePurchase() {
-      // Verifica se há itens no carrinho
       if (cart.length === 0) {
         alert("Seu carrinho está vazio.");
         return;
