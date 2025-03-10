@@ -176,13 +176,13 @@
       display: block;
       border-radius: 8px;
     }
-    /* Área de Filtros (em coluna) */
+    /* Área de Filtros */
     #filter-container {
       display: flex;
       flex-direction: column;
       gap: 10px;
       max-width: 800px;
-      margin: 10px auto; /* logo abaixo do vídeo */
+      margin: 10px auto;
       padding: 0 20px;
     }
     .filter-input {
@@ -197,7 +197,6 @@
       height: 40px;
       box-sizing: border-box;
     }
-    /* Customização do dropdown para exibir seta para baixo */
     select.filter-input {
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -208,7 +207,6 @@
       background-size: 10px 10px;
       padding-right: 30px;
     }
-    /* Input readonly para "Ordenar por" com valor fixo */
     #order-by {
       cursor: default;
     }
@@ -219,14 +217,12 @@
       font-size: 1.2rem;
       max-width: 800px;
     }
-    /* Título da Seção de Produtos */
     .products-title {
       text-align: center;
       font-size: 2rem;
       font-weight: bold;
       margin: 10px auto;
     }
-    /* Container de Produtos */
     #products-container {
       display: flex;
       flex-wrap: wrap;
@@ -244,7 +240,6 @@
       box-sizing: border-box;
       text-align: center;
     }
-    /* Contorno afastado para a imagem */
     .product-image {
       width: 100%;
       height: auto;
@@ -260,7 +255,6 @@
       margin: 5px 0;
       font-size: 1rem;
     }
-    /* Preços com estilos distintos */
     .prices {
       display: flex;
       justify-content: center;
@@ -276,7 +270,6 @@
       color: #02FF85;
       font-size: 1rem;
     }
-    /* Botão Comprar */
     .buy-button {
       display: block;
       width: 100%;
@@ -291,7 +284,6 @@
       font-weight: bold;
       text-transform: uppercase;
     }
-    /* Animações */
     @keyframes buttonClick {
       0% { transform: scale(1); }
       50% { transform: scale(0.9); }
@@ -360,7 +352,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 </head>
 <body>
-  <!-- Banner de Promoção (Texto Rolando) -->
+  <!-- Banner de Promoção -->
   <div class="promo-banner">
     <p>Parcele em até 5x sem juros | Frete grátis acima de R$ 300</p>
   </div>
@@ -383,7 +375,7 @@
   <div class="search-container">
     <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar...">
   </div>
-  <!-- Sidebar com Instagram e WhatsApp -->
+  <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <a href="https://www.instagram.com/1001importts?igsh=aTgxaDBsNjJ1dngx" target="_blank">
       <img src="instagram.png" alt="Instagram" style="width:20px; vertical-align:middle; margin-right:8px;"> Instagram
@@ -427,8 +419,8 @@
     <div class="modal-content">
       <h2>Como medir o tamanho do seu anel</h2>
       <p>Siga estas instruções para medir o tamanho do seu dedo:</p>
-      <!-- Imagem atualizada para medir.png -->
-      <img src="medir.png" alt="Como medir" style="width:100%; border-radius:8px; margin:10px 0;">
+      <!-- Imagem atualizada para medir.jpeg -->
+      <img src="medir.jpeg" alt="Como medir" style="width:100%; border-radius:8px; margin:10px 0;">
       <div class="modal-buttons">
         <button id="view-measure" class="modal-button">VEJA COMO MEDIR SEU DEDO</button>
         <button id="continue-cart" class="modal-button">CONTINUAR PARA O CARRINHO</button>
@@ -648,7 +640,6 @@
       closeModal("ring-size-modal");
     });
   
-    // Ao clicar em "VEJA COMO MEDIR SEU DEDO", abre a modal com o vídeo
     document.getElementById("view-measure").addEventListener("click", function() {
       openModal("video-modal");
     });
