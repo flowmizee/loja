@@ -164,18 +164,6 @@
     .sidebar a:hover {
       background: #f0f0f0;
     }
-    /* Container do Vídeo */
-    #video-container {
-      max-width: 800px;
-      margin: 170px auto 10px auto; /* espaçamento entre o banner, search e filtros */
-      padding: 0 20px;
-    }
-    #promo-video {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 8px;
-    }
     /* Área de Filtros */
     #filter-container {
       display: flex;
@@ -384,13 +372,6 @@
       <img src="whatsapp.png" alt="WhatsApp" style="width:20px; vertical-align:middle; margin-right:8px;"> WhatsApp
     </a>
   </div>
-  <!-- Container do Vídeo -->
-  <div id="video-container">
-    <video id="promo-video" loop muted autoplay playsinline>
-      <source src="video.mp4" type="video/mp4">
-      Seu navegador não suporta o elemento de vídeo.
-    </video>
-  </div>
   <!-- Área de Filtros -->
   <div id="filter-container">
     <input type="text" id="order-by" class="filter-input" value="Ordenar por" readonly>
@@ -462,14 +443,9 @@
     function toggleSearch() {
       const searchInput = document.getElementById("searchInput");
       searchInput.classList.toggle("active");
-      const video = document.getElementById("promo-video");
-      if (searchInput.classList.contains("active")) {
-        video.pause();
-        searchInput.focus();
-      } else {
+      if (!searchInput.classList.contains("active")) {
         searchInput.value = "";
         filterProducts();
-        video.play();
       }
     }
   
@@ -653,4 +629,4 @@
     }
   </script>
 </body>
-</html>
+    </html>
