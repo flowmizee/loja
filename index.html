@@ -164,13 +164,25 @@
     .sidebar a:hover {
       background: #f0f0f0;
     }
-    /* Área de Filtros */
+    /* Container do Vídeo */
+    #video-container {
+      max-width: 800px;
+      margin: 170px auto 10px auto; /* espaçamento entre o banner, search e filtros */
+      padding: 0 20px;
+    }
+    #promo-video {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+    }
+    /* Área de Filtros (em coluna) */
     #filter-container {
       display: flex;
       flex-direction: column;
       gap: 10px;
       max-width: 800px;
-      margin: 10px auto;
+      margin: 10px auto; /* logo abaixo do vídeo */
       padding: 0 20px;
     }
     .filter-input {
@@ -182,9 +194,10 @@
       font-size: 1rem;
       border-radius: 30px;
       text-align: center;
-      height: 40px;
-      box-sizing: border-box;
+      height: 40px;              /* Altura fixa para igualar os inputs */
+      box-sizing: border-box;    /* Inclui padding e border no tamanho final */
     }
+    /* Customização do dropdown para exibir seta para baixo */
     select.filter-input {
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -195,6 +208,7 @@
       background-size: 10px 10px;
       padding-right: 30px;
     }
+    /* Input readonly para "Ordenar por" com valor fixo */
     #order-by {
       cursor: default;
     }
@@ -205,12 +219,14 @@
       font-size: 1.2rem;
       max-width: 800px;
     }
+    /* Título da Seção de Produtos */
     .products-title {
       text-align: center;
       font-size: 2rem;
       font-weight: bold;
       margin: 10px auto;
     }
+    /* Container de Produtos */
     #products-container {
       display: flex;
       flex-wrap: wrap;
@@ -228,6 +244,7 @@
       box-sizing: border-box;
       text-align: center;
     }
+    /* Contorno afastado para a imagem */
     .product-image {
       width: 100%;
       height: auto;
@@ -243,6 +260,7 @@
       margin: 5px 0;
       font-size: 1rem;
     }
+    /* Preços com estilos distintos */
     .prices {
       display: flex;
       justify-content: center;
@@ -258,6 +276,7 @@
       color: #02FF85;
       font-size: 1rem;
     }
+    /* Botão Comprar */
     .buy-button {
       display: block;
       width: 100%;
@@ -272,6 +291,7 @@
       font-weight: bold;
       text-transform: uppercase;
     }
+    /* Animações */
     @keyframes buttonClick {
       0% { transform: scale(1); }
       50% { transform: scale(0.9); }
@@ -288,7 +308,7 @@
     .icon-animate {
       animation: iconClick 0.2s ease;
     }
-    /* Modais */
+    /* Estilos do Modal */
     .modal {
       position: fixed;
       top: 0;
@@ -297,50 +317,28 @@
       height: 100%;
       background: rgba(0,0,0,0.8);
       display: none;
-      justify-content: center;
       align-items: center;
-      z-index: 1100;
+      justify-content: center;
+      z-index: 2000;
     }
     .modal.active {
       display: flex;
     }
     .modal-content {
-      background: #000;
-      color: #fff;
+      background: #222;
       padding: 20px;
       border-radius: 8px;
-      width: 90%;
-      max-width: 500px;
+      max-width: 90%;
+      max-height: 90%;
+      overflow-y: auto;
       text-align: center;
-    }
-    .modal-button {
-      padding: 10px 15px;
-      margin: 5px;
-      border: 1px solid #fff;
-      background: transparent;
-      color: #fff;
-      cursor: pointer;
-      border-radius: 5px;
-      font-size: 1rem;
-    }
-    .modal-button:hover {
-      background: #fff;
-      color: #000;
-    }
-    /* Modal para vídeo */
-    #video-modal .modal-content {
-      padding: 10px;
-    }
-    #video-modal video {
-      width: 100%;
-      border-radius: 8px;
     }
   </style>
   <!-- Biblioteca PapaParse para ler CSV -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 </head>
 <body>
-  <!-- Banner de Promoção -->
+  <!-- Banner de Promoção (Texto Rolando) -->
   <div class="promo-banner">
     <p>Parcele em até 5x sem juros | Frete grátis acima de R$ 300</p>
   </div>
@@ -363,7 +361,7 @@
   <div class="search-container">
     <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar...">
   </div>
-  <!-- Sidebar -->
+  <!-- Sidebar com Instagram e WhatsApp -->
   <div class="sidebar" id="sidebar">
     <a href="https://www.instagram.com/1001importts?igsh=aTgxaDBsNjJ1dngx" target="_blank">
       <img src="instagram.png" alt="Instagram" style="width:20px; vertical-align:middle; margin-right:8px;"> Instagram
@@ -372,9 +370,18 @@
       <img src="whatsapp.png" alt="WhatsApp" style="width:20px; vertical-align:middle; margin-right:8px;"> WhatsApp
     </a>
   </div>
-  <!-- Área de Filtros -->
+  <!-- Container do Vídeo (acima dos filtros) -->
+  <div id="video-container">
+    <video id="promo-video" loop muted autoplay playsinline>
+      <source src="video.mp4" type="video/mp4">
+      Seu navegador não suporta o elemento de vídeo.
+    </video>
+  </div>
+  <!-- Área de Filtros (em coluna) -->
   <div id="filter-container">
+    <!-- Input readonly para "Ordenar por" -->
     <input type="text" id="order-by" class="filter-input" value="Ordenar por" readonly>
+    <!-- Dropdown para Categoria com opção "Todos os Produtos" -->
     <select id="category" class="filter-input">
       <option value="all">Todos os Produtos</option>
       <option value="Anel">Anel</option>
@@ -382,84 +389,61 @@
       <option value="Relógio">Relógio</option>
     </select>
   </div>
+  <!-- Exibe a quantidade de produtos encontrados -->
   <span id="product-count"></span>
+  <!-- Título da Seção de Produtos -->
   <h1 class="products-title">Todos os Produtos</h1>
+  <!-- Container dos produtos -->
   <div id="products-container"></div>
   
-  <!-- Modal para seleção de tamanho do anel -->
-  <div id="ring-size-modal" class="modal">
-    <div class="modal-content">
-      <h2>Selecione o tamanho do anel</h2>
-      <div id="ring-size-options"></div>
-      <button id="ring-size-cancel" class="modal-button">Cancelar</button>
-    </div>
-  </div>
-  
-  <!-- Modal de instruções para medir o dedo -->
-  <div id="measurement-modal" class="modal">
-    <div class="modal-content">
-      <h2>Como medir o tamanho do seu anel</h2>
-      <p>Siga estas instruções para medir o tamanho do seu dedo:</p>
-      <!-- Imagem atualizada para medir.jpeg -->
-      <img src="medir.jpeg" alt="Como medir" style="width:100%; border-radius:8px; margin:10px 0;">
-      <div class="modal-buttons">
-        <button id="view-measure" class="modal-button">VEJA COMO MEDIR SEU DEDO</button>
-        <button id="continue-cart" class="modal-button">CONTINUAR PARA O CARRINHO</button>
-        <button id="cancel-measure" class="modal-button">CANCELAR</button>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Modal para exibir o vídeo de medição -->
-  <div id="video-modal" class="modal">
-    <div class="modal-content">
-      <video controls>
-        <source src="video.mp4" type="video/mp4">
-        Seu navegador não suporta o elemento de vídeo.
-      </video>
-      <button onclick="closeModal('video-modal')" class="modal-button" style="margin-top:10px;">Fechar</button>
+  <!-- Modal para seleção de tamanho (Aparece apenas para Anéis) -->
+  <div id="ringModal" class="modal">
+    <div class="modal-content" id="ringModalContent">
+      <!-- Conteúdo do modal será injetado via JavaScript -->
     </div>
   </div>
   
   <script>
-    // Recupera o carrinho do localStorage ou define como vazio
-    let cart = [];
-    try {
-      let stored = JSON.parse(localStorage.getItem("cart"));
-      if (Array.isArray(stored) && stored.length > 0) {
-        cart = stored;
-      }
-    } catch (e) {
-      cart = [];
-    }
-    let allProducts = []; 
-    let currentRingProduct = null;
+    // Recupera o carrinho do localStorage ou cria um array vazio
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let allProducts = [];
+    let selectedRingProduct = null;
     let selectedRingSize = null;
-  
+    
+    // Atualiza o contador do carrinho ao carregar a página
     window.addEventListener("load", function() {
+      cart = JSON.parse(localStorage.getItem("cart")) || [];
       document.getElementById("cart-count").innerText = cart.length;
     });
-  
+    
     function toggleSearch() {
       const searchInput = document.getElementById("searchInput");
       searchInput.classList.toggle("active");
-      if (!searchInput.classList.contains("active")) {
+      // Controla o vídeo: pausa se o input estiver ativo; retoma se não
+      const video = document.getElementById("promo-video");
+      if (searchInput.classList.contains("active")) {
+        video.pause();
+        searchInput.focus();
+      } else {
         searchInput.value = "";
         filterProducts();
+        video.play();
       }
     }
-  
+    
     function toggleSidebar() {
       document.getElementById("sidebar").classList.toggle("open");
     }
-  
+    
+    // Função para animar ícones
     function animateIcon(element) {
       element.classList.add("icon-animate");
       setTimeout(() => element.classList.remove("icon-animate"), 200);
     }
-  
+    
+    // Função para adicionar produto ao carrinho
     function addToCart(product, button) {
-      if(button) {
+      if(button && button.classList) {
         button.classList.add("button-animate");
         setTimeout(() => button.classList.remove("button-animate"), 200);
       }
@@ -467,11 +451,13 @@
       document.getElementById("cart-count").innerText = cart.length;
       localStorage.setItem("cart", JSON.stringify(cart));
     }
-  
+    
+    // Função para redirecionar para a página do carrinho
     function goToCart() {
       window.location.href = "produtos.html";
     }
-  
+    
+    // Função para renderizar os produtos
     function renderProducts(products) {
       const container = document.getElementById("products-container");
       container.innerHTML = "";
@@ -486,15 +472,16 @@
               <p class="old-price">${product["Preço Antigo"]}</p>
               <p class="new-price">${product["Preço Novo"]}</p>
             </div>
-            <p>${product.Parcelas || ""}</p>
+            <p>${product.Parcelas}</p>
             <button class="buy-button">Comprar</button>
           </div>
         `;
         container.appendChild(card);
         const buyButton = card.querySelector(".buy-button");
-        if(product.Nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes("anel")) {
+        // Se o produto possui os campos "Tamanho" e "Estoque" (ou seja, é um anel), abre o modal
+        if(product["Tamanho"] && product["Estoque"]) {
           buyButton.addEventListener("click", function() {
-            showRingSizeModal(product);
+            openRingModal(product);
           });
         } else {
           buyButton.addEventListener("click", function() {
@@ -510,34 +497,39 @@
       });
       document.getElementById("product-count").innerText = products.length + " produto(s) encontrado(s)";
     }
-  
+    
+    // Função para filtrar os produtos com base na categoria e no texto de pesquisa
     function filterProducts() {
       let filtered = allProducts.slice();
       const category = document.getElementById("category").value;
       const searchQuery = document.getElementById("searchInput").value.trim().toLowerCase();
       const titleElement = document.querySelector('.products-title');
-  
+      
+      // Atualiza o título com base na seleção da categoria
       if (category === "all") {
         titleElement.textContent = "Todos os Produtos";
       } else {
         titleElement.textContent = category;
         filtered = filtered.filter(product =>
-          product.Nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes(category.toLowerCase())
+          product.Nome.toLowerCase().includes(category.toLowerCase())
         );
       }
-  
+      
+      // Se houver texto na pesquisa, filtra também pelos produtos que contenham esse texto
       if (searchQuery !== "") {
         filtered = filtered.filter(product =>
-          product.Nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes(searchQuery)
+          product.Nome.toLowerCase().includes(searchQuery)
         );
       }
-  
+      
       renderProducts(filtered);
     }
-  
+    
+    // Eventos: filtra ao alterar a categoria ou ao digitar na pesquisa
     document.getElementById("category").addEventListener("change", filterProducts);
     document.getElementById("searchInput").addEventListener("input", filterProducts);
-  
+    
+    // Carrega a planilha CSV e armazena os produtos
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNzpkH5z5PPki-w88HnOUlMhdOpdD_Yjp4Y6JB7hyaHp90OSvhcVpnrWUR-Ghx2RMEg05nM13suulk/pub?output=csv";
     Papa.parse(csvUrl, {
       download: true,
@@ -547,7 +539,8 @@
         renderProducts(allProducts);
       }
     });
-  
+    
+    // Script para esconder o banner e reposicionar o cabeçalho ao rolar a página
     window.addEventListener("scroll", function() {
       const banner = document.querySelector(".promo-banner");
       const header = document.querySelector(".header");
@@ -559,74 +552,70 @@
         header.style.top = "40px";
       }
     });
-  
-    /* Modais para seleção de tamanho e medição */
-    function showRingSizeModal(product) {
-      currentRingProduct = product;
+    
+    /* =========================
+       FUNÇÕES DO MODAL PARA ANÉIS
+    ============================ */
+    
+    // Abre o modal e renderiza a primeira etapa (escolha do tamanho)
+    function openRingModal(product) {
+      selectedRingProduct = product;
       selectedRingSize = null;
-      const optionsContainer = document.getElementById("ring-size-options");
-      optionsContainer.innerHTML = "";
-  
-      let sizes = [];
-      let stocks = [];
-      Object.keys(product).forEach(key => {
-        if(key.toLowerCase().includes("tamanho")) {
-          let sizeVal = product[key];
-          if(sizeVal && sizeVal.trim() !== "") {
-            sizes.push(sizeVal.trim());
-            let estoqueKey = key.replace(/tamanho/i, "Estoque");
-            let stockVal = product[estoqueKey] ? product[estoqueKey].toString().trim() : "0";
-            stocks.push(stockVal);
-          }
+      renderRingModalStep1(product);
+      document.getElementById("ringModal").classList.add("active");
+    }
+    
+    // Renderiza a etapa 1 do modal: listagem dos tamanhos disponíveis com estoque
+    function renderRingModalStep1(product) {
+      // Assume que as colunas "Tamanho" e "Estoque" são strings separadas por vírgula
+      let sizes = product["Tamanho"] ? product["Tamanho"].split(",") : [];
+      let stocks = product["Estoque"] ? product["Estoque"].split(",") : [];
+      sizes = sizes.map(s => s.trim());
+      stocks = stocks.map(s => s.trim());
+      
+      let html = `<h2>Selecione o tamanho do anel</h2>`;
+      html += `<div class="ring-options" style="display: flex; flex-wrap: wrap; justify-content: center;">`;
+      
+      for (let i = 0; i < sizes.length; i++) {
+        let size = sizes[i];
+        let stock = parseInt(stocks[i] || "0");
+        let stockText = "";
+        let stockColor = "";
+        if(stock < 10) {
+          stockText = `${stock} RESTANTES`;
+          stockColor = "red";
+        } else {
+          stockText = `EM ESTOQUE`;
+          stockColor = "green";
         }
-      });
-  
-      sizes.forEach((size, index) => {
-        const stock = stocks[index] || "0";
-        const btn = document.createElement("button");
-        btn.textContent = `Tamanho ${size} - Restam ${stock}`;
-        btn.classList.add("modal-button");
-        btn.onclick = function() {
-          selectedRingSize = size;
-          closeModal("ring-size-modal");
-          showMeasurementModal();
-        };
-        optionsContainer.appendChild(btn);
-      });
-  
-      openModal("ring-size-modal");
+        html += `<button class="ring-option" style="background: #333; border: none; border-radius: 8px; padding: 10px; margin: 5px; cursor: pointer; min-width: 80px;" onclick="selectRingSize('${size}', '${stock}')">`;
+        html += `<div class="size" style="font-size: 1.5rem; font-weight: bold;">${size}</div>`;
+        html += `<div class="stock" style="font-size: 1rem; color: ${stockColor};">${stockText}</div>`;
+        html += `</button>`;
+      }
+      html += `</div>`;
+      html += `<button class="modal-button" style="margin-top: 20px; padding: 10px 20px; border: none; border-radius: 30px; background: #fff; color: #000; font-size: 1rem; cursor: pointer;" onclick="closeRingModal()">CANCELAR</button>`;
+      
+      document.getElementById("ringModalContent").innerHTML = html;
     }
-  
-    function showMeasurementModal() {
-      openModal("measurement-modal");
+    
+    // Registra o tamanho selecionado e passa para a etapa 2 do modal
+    function selectRingSize(size, stock) {
+      selectedRingSize = size;
+      renderRingModalStep2();
     }
-  
-    document.getElementById("continue-cart").addEventListener("click", function() {
-      const productToAdd = Object.assign({}, currentRingProduct);
-      productToAdd.tamanho = selectedRingSize;
-      addToCart(productToAdd, null);
-      closeModal("measurement-modal");
-    });
-  
-    document.getElementById("cancel-measure").addEventListener("click", function() {
-      closeModal("measurement-modal");
-    });
-  
-    document.getElementById("ring-size-cancel").addEventListener("click", function() {
-      closeModal("ring-size-modal");
-    });
-  
-    document.getElementById("view-measure").addEventListener("click", function() {
-      openModal("video-modal");
-    });
-  
-    function openModal(modalId) {
-      document.getElementById(modalId).classList.add("active");
-    }
-  
-    function closeModal(modalId) {
-      document.getElementById(modalId).classList.remove("active");
-    }
-  </script>
-</body>
-    </html>
+    
+    // Renderiza a etapa 2: instruções para medir o tamanho com imagem e botões
+    function renderRingModalStep2() {
+      let html = `<h2>COMO MEDIR O TAMANHO DO SEU ANEL</h2>`;
+      html += `<p>Siga estas instruções para medir o tamanho do seu dedo:</p>`;
+      html += `<img src="medir.jpeg" alt="Medir anel" style="width: 100%; max-width: 300px; margin: 10px 0;">`;
+      // Área para o vídeo, inicialmente escondida
+      html += `<div id="measureVideoContainer" style="display: none; margin: 10px 0;">
+                <video id="measureVideo" width="100%" controls style="border-radius: 8px;">
+                  <source src="video.mp4" type="video/mp4">
+                  Seu navegador não suporta o elemento de vídeo.
+                </video>
+              </div>`;
+      html += `<div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">`;
+   
