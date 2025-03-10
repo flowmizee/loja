@@ -347,6 +347,14 @@
       background: #fff;
       color: #000;
     }
+    /* Modal para vídeo */
+    #video-modal .modal-content {
+      padding: 10px;
+    }
+    #video-modal video {
+      width: 100%;
+      border-radius: 8px;
+    }
   </style>
   <!-- Biblioteca PapaParse para ler CSV -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
@@ -384,18 +392,16 @@
       <img src="whatsapp.png" alt="WhatsApp" style="width:20px; vertical-align:middle; margin-right:8px;"> WhatsApp
     </a>
   </div>
-  <!-- Container do Vídeo (acima dos filtros) -->
+  <!-- Container do Vídeo -->
   <div id="video-container">
     <video id="promo-video" loop muted autoplay playsinline>
       <source src="video.mp4" type="video/mp4">
       Seu navegador não suporta o elemento de vídeo.
     </video>
   </div>
-  <!-- Área de Filtros (em coluna) -->
+  <!-- Área de Filtros -->
   <div id="filter-container">
-    <!-- Input readonly para "Ordenar por" -->
     <input type="text" id="order-by" class="filter-input" value="Ordenar por" readonly>
-    <!-- Dropdown para Categoria com opção "Todos os Produtos" -->
     <select id="category" class="filter-input">
       <option value="all">Todos os Produtos</option>
       <option value="Anel">Anel</option>
@@ -403,11 +409,8 @@
       <option value="Relógio">Relógio</option>
     </select>
   </div>
-  <!-- Exibe a quantidade de produtos encontrados -->
   <span id="product-count"></span>
-  <!-- Título da Seção de Produtos -->
   <h1 class="products-title">Todos os Produtos</h1>
-  <!-- Container dos produtos -->
   <div id="products-container"></div>
   
   <!-- Modal para seleção de tamanho do anel -->
@@ -424,12 +427,24 @@
     <div class="modal-content">
       <h2>Como medir o tamanho do seu anel</h2>
       <p>Siga estas instruções para medir o tamanho do seu dedo:</p>
-      <img src="measurement.png" alt="Como medir" style="width:100%; border-radius:8px; margin:10px 0;">
+      <!-- Imagem atualizada para medir.png -->
+      <img src="medir.png" alt="Como medir" style="width:100%; border-radius:8px; margin:10px 0;">
       <div class="modal-buttons">
         <button id="view-measure" class="modal-button">VEJA COMO MEDIR SEU DEDO</button>
         <button id="continue-cart" class="modal-button">CONTINUAR PARA O CARRINHO</button>
         <button id="cancel-measure" class="modal-button">CANCELAR</button>
       </div>
+    </div>
+  </div>
+  
+  <!-- Modal para exibir o vídeo de medição -->
+  <div id="video-modal" class="modal">
+    <div class="modal-content">
+      <video controls>
+        <source src="video.mp4" type="video/mp4">
+        Seu navegador não suporta o elemento de vídeo.
+      </video>
+      <button onclick="closeModal('video-modal')" class="modal-button" style="margin-top:10px;">Fechar</button>
     </div>
   </div>
   
@@ -448,7 +463,6 @@
     let currentRingProduct = null;
     let selectedRingSize = null;
   
-    // Atualiza o contador do carrinho ao carregar a página
     window.addEventListener("load", function() {
       document.getElementById("cart-count").innerText = cart.length;
     });
@@ -471,13 +485,11 @@
       document.getElementById("sidebar").classList.toggle("open");
     }
   
-    // Anima ícones ao clicar
     function animateIcon(element) {
       element.classList.add("icon-animate");
       setTimeout(() => element.classList.remove("icon-animate"), 200);
     }
   
-    // Adiciona o produto ao carrinho e atualiza o localStorage
     function addToCart(product, button) {
       if(button) {
         button.classList.add("button-animate");
@@ -488,12 +500,10 @@
       localStorage.setItem("cart", JSON.stringify(cart));
     }
   
-    // Redireciona para a página do carrinho
     function goToCart() {
       window.location.href = "produtos.html";
     }
   
-    // Renderiza os produtos na página
     function renderProducts(products) {
       const container = document.getElementById("products-container");
       container.innerHTML = "";
@@ -514,7 +524,6 @@
         `;
         container.appendChild(card);
         const buyButton = card.querySelector(".buy-button");
-        // Verifica se o produto é um anel (utiliza normalize para tratar acentos e variações)
         if(product.Nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes("anel")) {
           buyButton.addEventListener("click", function() {
             showRingSizeModal(product);
@@ -534,7 +543,6 @@
       document.getElementById("product-count").innerText = products.length + " produto(s) encontrado(s)";
     }
   
-    // Filtra os produtos conforme a categoria e texto da pesquisa
     function filterProducts() {
       let filtered = allProducts.slice();
       const category = document.getElementById("category").value;
@@ -562,7 +570,6 @@
     document.getElementById("category").addEventListener("change", filterProducts);
     document.getElementById("searchInput").addEventListener("input", filterProducts);
   
-    // Carrega a planilha CSV e armazena os produtos
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNzpkH5z5PPki-w88HnOUlMhdOpdD_Yjp4Y6JB7hyaHp90OSvhcVpnrWUR-Ghx2RMEg05nM13suulk/pub?output=csv";
     Papa.parse(csvUrl, {
       download: true,
@@ -573,7 +580,6 @@
       }
     });
   
-    // Esconde o banner e reposiciona o cabeçalho ao rolar a página
     window.addEventListener("scroll", function() {
       const banner = document.querySelector(".promo-banner");
       const header = document.querySelector(".header");
@@ -586,9 +592,7 @@
       }
     });
   
-    /* Funções para modais de seleção de tamanho e instruções de medição */
-  
-    // Abre o modal de seleção de tamanho para anéis
+    /* Modais para seleção de tamanho e medição */
     function showRingSizeModal(product) {
       currentRingProduct = product;
       selectedRingSize = null;
@@ -597,13 +601,11 @@
   
       let sizes = [];
       let stocks = [];
-      // Percorre todas as chaves do produto que contenham "tamanho"
       Object.keys(product).forEach(key => {
         if(key.toLowerCase().includes("tamanho")) {
           let sizeVal = product[key];
           if(sizeVal && sizeVal.trim() !== "") {
             sizes.push(sizeVal.trim());
-            // Tenta encontrar a coluna correspondente de Estoque
             let estoqueKey = key.replace(/tamanho/i, "Estoque");
             let stockVal = product[estoqueKey] ? product[estoqueKey].toString().trim() : "0";
             stocks.push(stockVal);
@@ -627,12 +629,10 @@
       openModal("ring-size-modal");
     }
   
-    // Abre o modal com instruções de medição
     function showMeasurementModal() {
       openModal("measurement-modal");
     }
   
-    // Eventos dos botões dos modais
     document.getElementById("continue-cart").addEventListener("click", function() {
       const productToAdd = Object.assign({}, currentRingProduct);
       productToAdd.tamanho = selectedRingSize;
@@ -648,11 +648,11 @@
       closeModal("ring-size-modal");
     });
   
+    // Ao clicar em "VEJA COMO MEDIR SEU DEDO", abre a modal com o vídeo
     document.getElementById("view-measure").addEventListener("click", function() {
-      alert("Aqui você verá instruções detalhadas sobre como medir seu dedo.");
+      openModal("video-modal");
     });
   
-    // Funções utilitárias para abrir e fechar modais
     function openModal(modalId) {
       document.getElementById(modalId).classList.add("active");
     }
