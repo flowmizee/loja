@@ -194,8 +194,8 @@
       font-size: 1rem;
       border-radius: 30px;
       text-align: center;
-      height: 40px;              /* Altura fixa para igualar os inputs */
-      box-sizing: border-box;    /* Inclui padding e border no tamanho final */
+      height: 40px;
+      box-sizing: border-box;
     }
     /* Customização do dropdown para exibir seta para baixo */
     select.filter-input {
@@ -434,22 +434,28 @@
   </div>
   
   <script>
-    // Recupera o carrinho do localStorage ou cria um array vazio
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    // Recupera o carrinho do localStorage ou define como vazio
+    let cart = [];
+    try {
+      let stored = JSON.parse(localStorage.getItem("cart"));
+      if (Array.isArray(stored) && stored.length > 0) {
+        cart = stored;
+      }
+    } catch (e) {
+      cart = [];
+    }
     let allProducts = []; 
     let currentRingProduct = null;
     let selectedRingSize = null;
   
     // Atualiza o contador do carrinho ao carregar a página
     window.addEventListener("load", function() {
-      cart = JSON.parse(localStorage.getItem("cart")) || [];
       document.getElementById("cart-count").innerText = cart.length;
     });
   
     function toggleSearch() {
       const searchInput = document.getElementById("searchInput");
       searchInput.classList.toggle("active");
-      // Controla o vídeo: pausa se o input estiver ativo; retoma se não
       const video = document.getElementById("promo-video");
       if (searchInput.classList.contains("active")) {
         video.pause();
@@ -465,15 +471,15 @@
       document.getElementById("sidebar").classList.toggle("open");
     }
   
-    // Função para animar ícones
+    // Anima ícones ao clicar
     function animateIcon(element) {
       element.classList.add("icon-animate");
       setTimeout(() => element.classList.remove("icon-animate"), 200);
     }
   
-    // Função para adicionar produto ao carrinho
+    // Adiciona o produto ao carrinho e atualiza o localStorage
     function addToCart(product, button) {
-      if(button){
+      if(button) {
         button.classList.add("button-animate");
         setTimeout(() => button.classList.remove("button-animate"), 200);
       }
@@ -482,12 +488,12 @@
       localStorage.setItem("cart", JSON.stringify(cart));
     }
   
-    // Função para redirecionar para a página do carrinho
+    // Redireciona para a página do carrinho
     function goToCart() {
       window.location.href = "produtos.html";
     }
   
-    // Função para renderizar os produtos
+    // Renderiza os produtos na página
     function renderProducts(products) {
       const container = document.getElementById("products-container");
       container.innerHTML = "";
@@ -508,8 +514,8 @@
         `;
         container.appendChild(card);
         const buyButton = card.querySelector(".buy-button");
-        // Se o produto for um anel, mostra o modal para seleção do tamanho
-        if(product.Nome.toLowerCase().includes("anel")){
+        // Verifica se o produto é um anel (utiliza normalize para tratar acentos e variações)
+        if(product.Nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes("anel")) {
           buyButton.addEventListener("click", function() {
             showRingSizeModal(product);
           });
@@ -528,34 +534,31 @@
       document.getElementById("product-count").innerText = products.length + " produto(s) encontrado(s)";
     }
   
-    // Função para filtrar os produtos com base na categoria e no texto de pesquisa
+    // Filtra os produtos conforme a categoria e texto da pesquisa
     function filterProducts() {
       let filtered = allProducts.slice();
       const category = document.getElementById("category").value;
       const searchQuery = document.getElementById("searchInput").value.trim().toLowerCase();
       const titleElement = document.querySelector('.products-title');
-      
-      // Atualiza o título com base na seleção da categoria
+  
       if (category === "all") {
         titleElement.textContent = "Todos os Produtos";
       } else {
         titleElement.textContent = category;
         filtered = filtered.filter(product =>
-          product.Nome.toLowerCase().includes(category.toLowerCase())
+          product.Nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes(category.toLowerCase())
         );
       }
-      
-      // Se houver texto na pesquisa, filtra também pelos produtos que contenham esse texto
+  
       if (searchQuery !== "") {
         filtered = filtered.filter(product =>
-          product.Nome.toLowerCase().includes(searchQuery)
+          product.Nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes(searchQuery)
         );
       }
-      
+  
       renderProducts(filtered);
     }
   
-    // Eventos: filtra ao alterar a categoria ou ao digitar na pesquisa
     document.getElementById("category").addEventListener("change", filterProducts);
     document.getElementById("searchInput").addEventListener("input", filterProducts);
   
@@ -570,7 +573,7 @@
       }
     });
   
-    // Script para esconder o banner e reposicionar o cabeçalho ao rolar a página
+    // Esconde o banner e reposiciona o cabeçalho ao rolar a página
     window.addEventListener("scroll", function() {
       const banner = document.querySelector(".promo-banner");
       const header = document.querySelector(".header");
@@ -592,15 +595,21 @@
       const optionsContainer = document.getElementById("ring-size-options");
       optionsContainer.innerHTML = "";
   
-      // Assume que a planilha possui as colunas "Tamanhos" e "Estoque" para os anéis
       let sizes = [];
       let stocks = [];
-      if (product["Tamanhos"]) {
-        sizes = product["Tamanhos"].split(",").map(s => s.trim());
-      }
-      if (product["Estoque"]) {
-        stocks = product["Estoque"].split(",").map(s => s.trim());
-      }
+      // Percorre todas as chaves do produto que contenham "tamanho"
+      Object.keys(product).forEach(key => {
+        if(key.toLowerCase().includes("tamanho")) {
+          let sizeVal = product[key];
+          if(sizeVal && sizeVal.trim() !== "") {
+            sizes.push(sizeVal.trim());
+            // Tenta encontrar a coluna correspondente de Estoque
+            let estoqueKey = key.replace(/tamanho/i, "Estoque");
+            let stockVal = product[estoqueKey] ? product[estoqueKey].toString().trim() : "0";
+            stocks.push(stockVal);
+          }
+        }
+      });
   
       sizes.forEach((size, index) => {
         const stock = stocks[index] || "0";
@@ -618,14 +627,13 @@
       openModal("ring-size-modal");
     }
   
-    // Abre o modal de instruções para medir o dedo
+    // Abre o modal com instruções de medição
     function showMeasurementModal() {
       openModal("measurement-modal");
     }
   
-    // Eventos dos botões do modal de instruções
+    // Eventos dos botões dos modais
     document.getElementById("continue-cart").addEventListener("click", function() {
-      // Adiciona o produto ao carrinho com o tamanho selecionado
       const productToAdd = Object.assign({}, currentRingProduct);
       productToAdd.tamanho = selectedRingSize;
       addToCart(productToAdd, null);
