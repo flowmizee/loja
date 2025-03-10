@@ -57,28 +57,6 @@
       margin: 2px 0;
       font-size: 0.9rem;
     }
-    /* Estilo dos controles de quantidade */
-    .quantity-controls {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      margin-top: 5px;
-    }
-    .quantity-controls button {
-      background: #02FF85;
-      border: none;
-      color: #000;
-      font-size: 1rem;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      cursor: pointer;
-    }
-    .quantity-controls span {
-      font-size: 1rem;
-      min-width: 20px;
-      text-align: center;
-    }
     .total {
       text-align: right;
       margin-top: 20px;
@@ -164,7 +142,7 @@
     
     <!-- Botão que exibe o formulário -->
     <button class="checkout-btn" onclick="showForm()">Finalizar Compra</button>
-    <!-- Link para voltar à página de produtos -->
+    <!-- Esse link apenas navega de volta para a página de produtos -->
     <a href="index.html" class="back-link">Voltar para Produtos</a>
   </div>
   
@@ -202,7 +180,7 @@
   </div>
   
   <script>
-    // Recupera o carrinho salvo no localStorage; cada item terá a propriedade 'quantity'
+    // Recupera o carrinho salvo no localStorage
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     
     // Renderiza os itens do carrinho e atualiza a quantidade exibida
@@ -218,19 +196,12 @@
       }
       
       let total = 0;
-      let totalItens = 0;
-      
       cart.forEach((item, index) => {
-        // Define a quantidade padrão se não estiver definida
-        if (!item.quantity) {
-          item.quantity = 1;
-        }
-        totalItens += item.quantity;
-        // Extração e conversão do preço (assumindo que item.newPrice tem formatação de moeda)
         let price = item.newPrice.replace(/\D+/g, "");
         price = parseFloat(price) / 100;
-        let itemTotal = price * item.quantity;
-        total += itemTotal;
+        if (!isNaN(price)) {
+          total += price;
+        }
         
         const itemDiv = document.createElement("div");
         itemDiv.classList.add("cart-item");
@@ -239,49 +210,16 @@
           <img src="${item.image}" alt="${item.name}">
           <div class="details">
             <h2>${item.name}</h2>
-            <p>Preço unitário: R$ ${price.toFixed(2)}</p>
-            <p>Total: R$ ${itemTotal.toFixed(2)}</p>
-            <div class="quantity-controls">
-              <button class="minus-btn">–</button>
-              <span class="quantity-display">${item.quantity}</span>
-              <button class="plus-btn">+</button>
-            </div>
-            ${item.parcelas ? `<p>${item.parcelas}</p>` : ""}
+            <p>Preço: R$ ${price.toFixed(2)}</p>
+            <p>${item.parcelas ? item.parcelas : ""}</p>
           </div>
         `;
         cartItemsContainer.appendChild(itemDiv);
-  
-        // Eventos para os botões de quantidade
-        const minusBtn = itemDiv.querySelector(".minus-btn");
-        const plusBtn = itemDiv.querySelector(".plus-btn");
-  
-        minusBtn.addEventListener("click", function() {
-          if (item.quantity > 1) {
-            item.quantity--;
-          } else {
-            // Se a quantidade for 1, remover o item
-            cart.splice(index, 1);
-          }
-          updateCart();
-        });
-  
-        plusBtn.addEventListener("click", function() {
-          item.quantity++;
-          updateCart();
-        });
-  
-        // Função para detectar gesto de deslizar e remover o item
         attachSwipeListeners(itemDiv);
       });
       
       document.getElementById("total").innerText = "Total: R$ " + total.toFixed(2);
-      document.getElementById("cart-count-display").innerText = "Itens no carrinho: " + totalItens;
-      localStorage.setItem("cart", JSON.stringify(cart));
-    }
-    
-    // Atualiza o carrinho e re-renderiza
-    function updateCart() {
-      renderCart();
+      document.getElementById("cart-count-display").innerText = "Itens no carrinho: " + cart.length;
     }
     
     // Detecta o gesto de deslizar para a esquerda e remove o item
@@ -298,7 +236,7 @@
       element.addEventListener('touchmove', function(e) {
         currentX = e.touches[0].clientX;
         let deltaX = currentX - startX;
-        if (deltaX < 0) { // somente deslize à esquerda
+        if (deltaX < 0) { // somente para deslize à esquerda
           element.style.transform = `translateX(${deltaX}px)`;
         }
       }, false);
@@ -311,7 +249,8 @@
           setTimeout(() => {
             let index = parseInt(element.dataset.index);
             cart.splice(index, 1);
-            updateCart();
+            localStorage.setItem("cart", JSON.stringify(cart));
+            renderCart();
           }, 300);
         } else {
           element.style.transition = 'transform 0.3s ease-out';
@@ -340,7 +279,7 @@
       formContainer.addEventListener('touchmove', function(e) {
         currentY = e.touches[0].clientY;
         let deltaY = currentY - startY;
-        if (deltaY > 0) { // apenas deslizar para baixo
+        if (deltaY > 0) { // apenas para deslizar para baixo
           formContainer.style.transform = `translateY(${deltaY}px)`;
         }
       }, false);
@@ -361,13 +300,8 @@
       }, false);
     }
     
-    // Finaliza a compra e envia os dados via WhatsApp, somente se houver produtos no carrinho
+    // Finaliza a compra e envia os dados via WhatsApp com formatação
     function finalizePurchase() {
-      if (cart.length === 0) {
-        alert("Seu carrinho está vazio.");
-        return;
-      }
-      
       const nome = document.getElementById("nome").value.trim();
       const estado = document.getElementById("estado").value.trim();
       const cidade = document.getElementById("cidade").value.trim();
@@ -392,14 +326,14 @@
       
       let produtosTexto = "*Produtos:*\n";
       cart.forEach(item => {
-        produtosTexto += `- *${item.name}* (Qtd: ${item.quantity}) - Preço: *${item.newPrice}*\n`;
+        produtosTexto += `- *${item.name}* - Preço: *${item.newPrice}*\n`;
       });
       
       let total = 0;
       cart.forEach(item => {
         let price = item.newPrice.replace(/\D+/g, "");
         price = parseFloat(price) / 100;
-        total += price * item.quantity;
+        if (!isNaN(price)) total += price;
       });
       produtosTexto += `\n*Total:* R$ ${total.toFixed(2)}\n\n`;
       
@@ -408,8 +342,8 @@
       entregaTexto += `*Estado:* ${estado}\n`;
       entregaTexto += `*Cidade:* ${cidade}\n`;
       entregaTexto += `*Endereço:* ${endereco}\n`;
-      if (complemento) entregaTexto += `*Complemento:* ${complemento}\n`;
-      if (ponto) entregaTexto += `*Ponto de Referência:* ${ponto}\n`;
+      if(complemento) entregaTexto += `*Complemento:* ${complemento}\n`;
+      if(ponto) entregaTexto += `*Ponto de Referência:* ${ponto}\n`;
       entregaTexto += `${pagamentoInfo}\n`;
       
       let mensagem = "Olá, gostaria de finalizar a compra:\n\n" + produtosTexto + entregaTexto;
